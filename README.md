@@ -1,36 +1,69 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Pulse Hive UI
 
-## Getting Started
+Next.js (App Router) + Ant Design + Redux Toolkit + SCSS.
 
-First, run the development server:
+## Stack
+
+| Concern | Choice |
+| --- | --- |
+| Framework | Next.js 16 (App Router) |
+| Language | TypeScript |
+| UI library | Ant Design 6 |
+| State | Redux Toolkit + React-Redux |
+| Styling | SCSS (CSS Modules) |
+| Package manager | pnpm |
+| Node | 22 (see `.nvmrc`) |
+
+## Prerequisites
+
+- **Node 22** — run `nvm use` (reads `.nvmrc`) or `nvm install 22`.
+- **pnpm** — `corepack enable pnpm`.
+
+## Getting started
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+nvm use            # Node 22
+pnpm install
+pnpm dev           # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Scripts
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| Command | Description |
+| --- | --- |
+| `pnpm dev` | Start the dev server |
+| `pnpm build` | Production build |
+| `pnpm start` | Serve the production build |
+| `pnpm lint` | Run ESLint |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Project layout
 
-## Learn More
+```
+app/                  App Router routes
+  layout.tsx          Root layout: StoreProvider → AntdRegistry → ConfigProvider
+  page.tsx            Demo page (AntD + Redux counter)
+  globals.scss        Global styles
+store/
+  index.ts            makeStore() factory + RootState / AppDispatch types
+  hooks.ts            Typed useAppSelector / useAppDispatch
+  StoreProvider.tsx   Client provider (per-instance store)
+  slices/             Redux slices (counterSlice example)
+theme/
+  themeConfig.ts      Ant Design design tokens (ConfigProvider)
+styles/
+  _variables.scss     Shared SCSS variables/mixins
+```
 
-To learn more about Next.js, take a look at the following resources:
+## Conventions
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Ant Design theming** goes through design tokens in `theme/themeConfig.ts`
+  (`ConfigProvider`). Use SCSS only for layout and for tweaks tokens can't express.
+- **State**: add a slice under `store/slices/`, register its reducer in
+  `store/index.ts`, and access it via the typed hooks in `store/hooks.ts`.
+- **SSR styles** for AntD are handled by `@ant-design/nextjs-registry`
+  (`AntdRegistry` in the root layout) — this prevents a flash of unstyled content.
+- **SCSS**: component styles are `*.module.scss`; import shared tokens with
+  `@use "../styles/variables" as vars;`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+> Redux Persist is intentionally omitted for now; add it per-slice (whitelist)
+> if/when persistence is needed.
