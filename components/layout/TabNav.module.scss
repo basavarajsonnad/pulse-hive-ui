@@ -1,0 +1,39 @@
+@use "@/styles/variables" as vars;
+
+.tabs {
+  :global(.ant-tabs-content-holder) {
+    display: none;
+  }
+
+  :global(.ant-tabs-nav) {
+    margin: 0;
+
+    &::before {
+      display: none;
+    }
+  }
+
+  :global(.ant-tabs-tab) {
+    padding: 0 16px;
+    color: vars.$color-text;
+  }
+
+  // Not-yet-built tabs stay readable; they just don't navigate.
+  :global(.ant-tabs-tab-disabled),
+  :global(.ant-tabs-tab-disabled .ant-tabs-tab-btn) {
+    color: vars.$color-text;
+    cursor: default;
+  }
+}
+
+.primary {
+  :global(.ant-tabs-tab) {
+    height: 52px;
+  }
+}
+
+.secondary {
+  :global(.ant-tabs-tab) {
+    height: 34px;
+  }
+}

@@ -1,0 +1,130 @@
+@use "@/styles/variables" as vars;
+
+.card {
+  background: vars.$color-surface;
+  border: 1px solid vars.$color-border;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &:fullscreen {
+    padding: vars.$spacing-md;
+    border-radius: 0;
+    overflow: auto;
+  }
+}
+
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 14px 14px 13px;
+  border-bottom: 1px solid vars.$color-border;
+}
+
+.title {
+  margin-right: auto;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.count {
+  white-space: nowrap;
+  margin-right: 6px;
+  color: vars.$color-muted;
+  font-size: 12px;
+}
+
+// Nested so it outranks AntD's `.ant-input-affix-wrapper { width: 100% }`.
+.toolbar .search {
+  flex: 0 0 168px;
+  width: 168px;
+}
+
+.columnPicker {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.card :global(.ant-table-thead > tr > th) {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.card :global(.ant-table-pagination) {
+  padding: 0 14px;
+}
+
+.customerName {
+  font-weight: 500;
+}
+
+.tier {
+  margin: 0;
+  padding: 0 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  line-height: 18px;
+}
+
+.tierBasic {
+  background: #f0f0f3;
+  color: #4a4d5e;
+}
+
+.tierIntermediate {
+  background: #e3ecff;
+  color: #2b5bd7;
+}
+
+.tierAdvanced {
+  background: #fff1d6;
+  color: #9a5b00;
+}
+
+.login {
+  color: vars.$color-primary;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.status {
+  padding: 1px 10px;
+  border: 0;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.statusActive {
+  background: #d8f5e3;
+  color: #1a7f43;
+}
+
+.statusDisabled {
+  background: #fde3e3;
+  color: #b42323;
+}
+
+.muted {
+  color: vars.$color-muted;
+}
+
+.actions {
+  display: inline-flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.card :global(.ant-table-row):hover .actions,
+.actions:focus-within {
+  opacity: 1;
+}

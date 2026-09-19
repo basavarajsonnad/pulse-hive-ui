@@ -1,0 +1,56 @@
+@use "@/styles/variables" as vars;
+
+.sidebar {
+  flex: 0 0 vars.$sidebar-width;
+  width: vars.$sidebar-width;
+  min-height: 100vh;
+  background: vars.$color-surface;
+  border-right: 1px solid vars.$color-border;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 49px;
+  border-bottom: 1px solid vars.$color-border;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 38px;
+  padding: 0 20px 0 18px;
+  color: vars.$color-text;
+  text-decoration: none;
+
+  &:not(.disabled):not(.active):hover {
+    background: vars.$color-primary-soft;
+  }
+}
+
+.icon {
+  display: inline-flex;
+  width: 16px;
+  font-size: 14px;
+}
+
+.label {
+  flex: 1;
+}
+
+.active {
+  background: vars.$color-primary;
+  color: #fff;
+  font-weight: 600;
+}
+
+.disabled {
+  cursor: default;
+}

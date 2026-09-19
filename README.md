@@ -41,13 +41,19 @@ pnpm dev           # http://localhost:3000
 ```
 app/                  App Router routes
   layout.tsx          Root layout: StoreProvider → AntdRegistry → ConfigProvider
-  page.tsx            Demo page (AntD + Redux counter)
   globals.scss        Global styles
+  (portal)/           Route group: sidebar shell around all portal pages
+    customers/tenant-setup/tenants/   Tenants page (/customers/tenant-setup/tenants)
+components/
+  layout/             Sidebar, TabNav, top bar, filter bar
+  tenants/            Tenants table, inline-edit cell, add/edit drawer, helpers
+mock/                 Mock data (tenants.ts) — swap for API calls later
+types/                Shared TypeScript types
 store/
   index.ts            makeStore() factory + RootState / AppDispatch types
   hooks.ts            Typed useAppSelector / useAppDispatch
   StoreProvider.tsx   Client provider (per-instance store)
-  slices/             Redux slices (counterSlice example)
+  slices/             Redux slices (tenantsSlice)
 theme/
   themeConfig.ts      Ant Design design tokens (ConfigProvider)
 styles/

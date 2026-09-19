@@ -1,0 +1,20 @@
+@use "@/styles/variables" as vars;
+
+.bar {
+  display: flex;
+  align-items: center;
+  height: 53px;
+  padding: 0 16px 0 20px;
+  background: vars.$color-surface;
+  border-bottom: 1px solid vars.$color-border;
+}
+
+.section {
+  margin-right: 12px;
+  letter-spacing: 0.02em;
+}
+
+.tabs {
+  flex: 1;
+  min-width: 0;
+}

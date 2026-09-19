@@ -1,0 +1,26 @@
+@use "@/styles/variables" as vars;
+
+.cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.field {
+  min-width: 180px;
+}
+
+.pencil {
+  display: inline-flex;
+  padding: 2px;
+  border: 0;
+  background: none;
+  color: vars.$color-faint;
+  font-size: 12px;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    color: vars.$color-primary;
+  }
+}
