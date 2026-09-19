@@ -77,8 +77,16 @@ export async function createTenant(rawBody: string): Promise<unknown> {
   });
 }
 
-export async function getJob(jobId: string): Promise<unknown> {
-  return hiveFetch(`/api/v1/tenants/${encodeURIComponent(jobId)}`, {
+export async function listTenants(): Promise<unknown> {
+  return hiveFetch("/api/v1/tenants", {
     method: "GET",
   });
 }
+
+export async function getJobStatus(jobId: string): Promise<unknown> {
+  return hiveFetch(`/api/v1/tenants/${encodeURIComponent(jobId)}/status`, {
+    method: "GET",
+  });
+}
+
+

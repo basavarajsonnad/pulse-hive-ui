@@ -19,24 +19,23 @@ export type CreateTenantResponse = {
   status: string;
 };
 
-export type ProvisioningJobStatus = "in_progress" | "complete" | "failed";
+export type JobStatus = "in_progress" | "success" | "failure";
 
-export type ProvisioningStep = {
-  name: string;
-  status: string;
-  startedAt: string | null;
-  endedAt: string | null;
-  detail: string | null;
-};
-
-export type ProvisioningJobResponse = {
+export type JobStatusResponse = {
   jobId: string;
   customerName: string;
-  tenantName: string | null;
-  status: string;
-  startedAt: string;
-  updatedAt: string;
-  steps: ProvisioningStep[];
+  status: JobStatus;
+};
+
+export type JobListItem = {
+  jobId: string;
+  customerName: string;
+  status: JobStatus;
+  createdAt: string;
+};
+
+export type JobListResponse = {
+  jobs: JobListItem[];
 };
 
 export type ApiError = {
