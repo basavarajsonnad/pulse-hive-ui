@@ -1,36 +1,38 @@
-import type { ApiError, CreateTenantRequest, CreateTenantResponse } from "@/types/tenant";
-import { VALIDATION_FAILED } from "@/types/tenant";
+import { VALIDATION_FAILED, type ApiError } from "@/types/tenant";
 
 export class HiveClientError extends Error {
-  readonly status = 400;
-  readonly code = VALIDATION_FAILED;
+  readonly status: number;
+  readonly code: ApiError["code"];
 
-  constructor(message: string) {
+  constructor(status: number, code: ApiError["code"], message: string) {
     super(message);
     this.name = "HiveClientError";
+    this.status = status;
+    this.code = code;
   }
 }
 
 function hiveBaseUrl(): string {
   const configured = process.env.HIVE_API_BASE_URL?.trim();
   if (!configured) {
-    throw new HiveClientError("HIVE_API_BASE_URL is not configured");
+    throw new HiveClientError(
+      400,
+      VALIDATION_FAILED,
+      "HIVE_API_BASE_URL is not configured",
+    );
   }
 
   return configured.replace(/\/$/, "");
 }
 
-function asApiError(body: unknown): ApiError | null {
-  if (!body || typeof body !== "object") {
-    return null;
-  }
+function hiveError(status: number, body: unknown): HiveClientError {
+  const record = body && typeof body === "object" ? (body as Record<string, unknown>) : null;
+  const message =
+    typeof record?.message === "string" ? record.message : "Unable to complete request";
+  const code = record?.code === "JOB_NOT_FOUND" ? "JOB_NOT_FOUND" : VALIDATION_FAILED;
+  const httpStatus = status === 404 || code === "JOB_NOT_FOUND" ? 404 : 400;
 
-  const record = body as Record<string, unknown>;
-  if (typeof record.message !== "string") {
-    return null;
-  }
-
-  return { code: VALIDATION_FAILED, message: record.message };
+  return new HiveClientError(httpStatus, code, message);
 }
 
 async function parseJson(response: Response): Promise<unknown> {
@@ -46,39 +48,37 @@ async function parseJson(response: Response): Promise<unknown> {
   }
 }
 
-export async function createTenant(
-  payload: CreateTenantRequest,
-): Promise<CreateTenantResponse> {
-  const baseUrl = hiveBaseUrl();
+async function hiveFetch(path: string, init?: RequestInit): Promise<unknown> {
   let response: Response;
 
   try {
-    response = await fetch(`${baseUrl}/api/v1/tenants`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+    response = await fetch(`${hiveBaseUrl()}${path}`, {
+      ...init,
       cache: "no-store",
     });
   } catch {
-    throw new HiveClientError("Unable to create tenant");
+    throw new HiveClientError(400, VALIDATION_FAILED, "Unable to reach Hive");
   }
 
   const body = await parseJson(response);
 
-  if (response.status === 202) {
-    const created = body as CreateTenantResponse | null;
-    if (
-      created &&
-      typeof created.jobId === "string" &&
-      typeof created.customerName === "string" &&
-      typeof created.status === "string"
-    ) {
-      return created;
-    }
-
-    throw new HiveClientError("Unable to create tenant");
+  if (response.ok) {
+    return body;
   }
 
-  const apiError = asApiError(body);
-  throw new HiveClientError(apiError?.message ?? "Unable to create tenant");
+  throw hiveError(response.status, body);
+}
+
+export async function createTenant(rawBody: string): Promise<unknown> {
+  return hiveFetch("/api/v1/tenants", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: rawBody,
+  });
+}
+
+export async function getJob(jobId: string): Promise<unknown> {
+  return hiveFetch(`/api/v1/tenants/${encodeURIComponent(jobId)}`, {
+    method: "GET",
+  });
 }

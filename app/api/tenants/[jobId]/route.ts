@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createTenant, HiveClientError } from "@/lib/hiveClient";
+import { getJob, HiveClientError } from "@/lib/hiveClient";
 import { VALIDATION_FAILED, type ApiError } from "@/types/tenant";
 
 function errorResponse(status: number, code: ApiError["code"], message: string) {
@@ -7,17 +7,20 @@ function errorResponse(status: number, code: ApiError["code"], message: string) 
   return NextResponse.json(body, { status });
 }
 
-export async function POST(request: Request) {
-  const rawBody = await request.text();
+export async function GET(
+  _request: Request,
+  { params }: { params: Promise<{ jobId: string }> },
+) {
+  const { jobId } = await params;
 
   try {
-    const created = await createTenant(rawBody);
-    return NextResponse.json(created, { status: 202 });
+    const job = await getJob(jobId);
+    return NextResponse.json(job, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {
       return errorResponse(error.status, error.code, error.message);
     }
 
-    return errorResponse(400, VALIDATION_FAILED, "Unable to create tenant");
+    return errorResponse(400, VALIDATION_FAILED, "Unable to get tenant job");
   }
 }
