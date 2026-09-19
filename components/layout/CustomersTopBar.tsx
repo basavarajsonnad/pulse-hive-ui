@@ -2,10 +2,9 @@
 
 import { Badge, Button } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
-import { useAppSelector } from "@/store/hooks";
-import { selectActiveFilterCount } from "@/store/slices/tenantsSlice";
+import { useDateRangeFilter } from "@/features/Tenants/useDateRangeFilter";
 import TabNav, { type ITabNavItem } from "./TabNav";
-import styles from "./CustomersTopBar.module.scss";
+import styles from "./styles/CustomersTopBar.module.scss";
 
 const CUSTOMER_TABS: ITabNavItem[] = [
   {
@@ -19,7 +18,7 @@ const CUSTOMER_TABS: ITabNavItem[] = [
 ];
 
 export default function CustomersTopBar() {
-  const activeFilters = useAppSelector(selectActiveFilterCount);
+  const { activeFilterCount } = useDateRangeFilter();
 
   return (
     <header className={styles.bar}>
@@ -27,7 +26,7 @@ export default function CustomersTopBar() {
       <div className={styles.tabs}>
         <TabNav items={CUSTOMER_TABS} />
       </div>
-      <Badge count={activeFilters} size="small">
+      <Badge count={activeFilterCount} size="small">
         <Button icon={<FilterOutlined />} aria-label="Filters" />
       </Badge>
     </header>

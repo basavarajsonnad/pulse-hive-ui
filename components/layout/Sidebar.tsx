@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Badge } from "antd";
 import { BuildOutlined, HomeOutlined } from "@ant-design/icons";
 import type { ReactNode } from "react";
-import styles from "./Sidebar.module.scss";
+import styles from "./styles/Sidebar.module.scss";
 
 interface INavItem {
   key: string;

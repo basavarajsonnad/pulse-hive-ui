@@ -45,15 +45,20 @@ app/                  App Router routes
   (portal)/           Route group: sidebar shell around all portal pages
     customers/tenant-setup/tenants/   Tenants page (/customers/tenant-setup/tenants)
 components/
-  layout/             Sidebar, TabNav, top bar, filter bar
-  tenants/            Tenants table, inline-edit cell, add/edit drawer, helpers
-mock/                 Mock data (tenants.ts) — swap for API calls later
-types/                Shared TypeScript types
-store/
-  index.ts            makeStore() factory + RootState / AppDispatch types
+  layout/             App shell only: Sidebar, TabNav, top bar, filter bar
+features/
+  Tenants/            Everything for tenants in one place: api.ts (GET /api/tenants),
+                      useDateRangeFilter.ts (date-range chip, kept in the URL), types.ts,
+                      utils.tsx, TenantsTable / TenantForm / EditableCell, styles/
+  Login/              slice.ts: authToken + user details (used by axios baseQuery)
+shared/
+  Notification/       Success/error toasts driven by redux (setNotification)
+axiosconfig/          axiosInstance, baseQuery (auth + refresh), interceptor
+redux/
+  store.ts            Singleton store + RootState / AppDispatch types
+  rootReducer.ts      Slice + API reducers
   hooks.ts            Typed useAppSelector / useAppDispatch
-  StoreProvider.tsx   Client provider (per-instance store)
-  slices/             Redux slices (tenantsSlice)
+utils/constants/      apiConstants, appConstants, urlConstants
 theme/
   themeConfig.ts      Ant Design design tokens (ConfigProvider)
 styles/
@@ -64,8 +69,13 @@ styles/
 
 - **Ant Design theming** goes through design tokens in `theme/themeConfig.ts`
   (`ConfigProvider`). Use SCSS only for layout and for tweaks tokens can't express.
-- **State**: add a slice under `store/slices/`, register its reducer in
-  `store/index.ts`, and access it via the typed hooks in `store/hooks.ts`.
+- **API calls**: every feature has an `api.ts` (`createApi` + `axiosBaseQuery()`).
+  Register its `reducerPath`/`reducer` in `redux/rootReducer.ts` and its
+  `middleware` in `redux/store.ts`. Endpoint paths live in `utils/constants/urlConstants.ts`.
+  Set `NEXT_PUBLIC_API_URL` (and optionally `NEXT_PUBLIC_API_VERSION`).
+- **State**: a slice is only for state the axios layer needs (login, notification).
+  Everything else is `useState`, or the URL when several layouts share it. The
+  redux `Provider` lives in `app/(portal)/layout.tsx` (a client layout).
 - **SSR styles** for AntD are handled by `@ant-design/nextjs-registry`
   (`AntdRegistry` in the root layout) — this prevents a flash of unstyled content.
 - **SCSS**: component styles are `*.module.scss`; import shared tokens with

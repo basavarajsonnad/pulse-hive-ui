@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
+  Alert,
   Button,
   Checkbox,
   ConfigProvider,
@@ -17,17 +18,12 @@ import {
   FullscreenOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
-  deleteTenant,
-  selectAllTenants,
-  selectCustomerGroups,
-  selectSearch,
-  selectVisibleTenants,
-  setSearch,
-  toggleStatus,
-  updateTenant,
-} from "@/store/slices/tenantsSlice";
+  useDeleteTenantMutation,
+  useListTenantsQuery,
+  useToggleTenantStatusMutation,
+  useUpdateTenantMutation,
+} from "@/features/Tenants/api";
 import type {
   ColumnFilters,
   ITenant,
@@ -35,27 +31,39 @@ import type {
   TenantChanges,
 } from "./types";
 import {
+  EMPTY_TENANTS,
   downloadTenantsCsv,
+  filterTenants,
+  getCustomerGroups,
   getTenantColumns,
   matchesColumnFilters,
 } from "./utils";
+import { useDateRangeFilter } from "./useDateRangeFilter";
 import styles from "./styles/TenantsTable.module.scss";
 
 export default function TenantsTable({ onEdit }: ITenantsTableProps) {
-  const dispatch = useAppDispatch();
-  const allTenants = useAppSelector(selectAllTenants);
-  const searchedTenants = useAppSelector(selectVisibleTenants);
-  const search = useAppSelector(selectSearch);
-  const customerGroups = useAppSelector(selectCustomerGroups);
+  const { dateRange } = useDateRangeFilter();
+  const [search, setSearch] = useState("");
+
+  const { data, isLoading, isError, refetch } = useListTenantsQuery();
+  const [updateTenant] = useUpdateTenantMutation();
+  const [toggleTenantStatus] = useToggleTenantStatusMutation();
+  const [deleteTenant] = useDeleteTenantMutation();
+
+  const allTenants = data ?? EMPTY_TENANTS;
+  const customerGroups = useMemo(() => getCustomerGroups(allTenants), [allTenants]);
 
   const [columnFilters, setColumnFilters] = useState<ColumnFilters>({});
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
   const [fullscreen, setFullscreen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const data = useMemo(
-    () => searchedTenants.filter((t) => matchesColumnFilters(t, columnFilters)),
-    [searchedTenants, columnFilters],
+  const tableData = useMemo(
+    () =>
+      filterTenants(allTenants, search, dateRange).filter((t) =>
+        matchesColumnFilters(t, columnFilters),
+      ),
+    [allTenants, search, dateRange, columnFilters],
   );
 
   useEffect(() => {
@@ -72,18 +80,16 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
   };
 
   const handleOnUpdate = (id: string, changes: TenantChanges) =>
-    dispatch(updateTenant({ id, changes }));
+    updateTenant({ id, changes });
 
-  const handleOnDelete = (id: string) => dispatch(deleteTenant(id));
+  const handleOnDelete = (id: string) => deleteTenant(id);
 
-  const handleOnToggleStatus = (id: string) => dispatch(toggleStatus(id));
+  const handleOnToggleStatus = (id: string) => toggleTenantStatus(id);
 
-  const handleOnSearchChange = (value: string) => dispatch(setSearch(value));
-
-  const handleOnTableChange: TableProps<ITenant>["onChange"] = (_, filters) =>
+    const handleOnTableChange: TableProps<ITenant>["onChange"] = (_, filters) =>
     setColumnFilters(filters);
 
-  const handleOnDownload = () => downloadTenantsCsv(data, "tenants.csv");
+  const handleOnDownload = () => downloadTenantsCsv(tableData, "tenants.csv");
 
   const columns = getTenantColumns({
     columnFilters,
@@ -113,7 +119,7 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
       <div className={styles.toolbar}>
         <h2 className={styles.title}>Customers — All customer groups</h2>
         <span className={styles.count}>
-          {data.length} of {allTenants.length}
+          {tableData.length} of {allTenants.length}
         </span>
         <Input
           size="small"
@@ -122,7 +128,7 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
           placeholder="Search..."
           aria-label="Search customers"
           value={search}
-          onChange={(e) => handleOnSearchChange(e.target.value)}
+          onChange={(e) => setSearch(e.target.value)}
         />
         <Popover
           trigger="click"
@@ -160,13 +166,27 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
         </Tooltip>
       </div>
 
+      {isError && (
+        <Alert
+          type="error"
+          showIcon
+          title="Couldn't load tenants"
+          action={
+            <Button size="small" onClick={refetch}>
+              Retry
+            </Button>
+          }
+        />
+      )}
+
       {/* Popups must render inside the card or they vanish in full screen. */}
       <ConfigProvider getPopupContainer={getPopupContainer}>
         <Table<ITenant>
           size="small"
           rowKey="id"
           columns={visibleColumns}
-          dataSource={data}
+          dataSource={tableData}
+          loading={isLoading}
           onChange={handleOnTableChange}
           scroll={{ x: "max-content" }}
           pagination={{

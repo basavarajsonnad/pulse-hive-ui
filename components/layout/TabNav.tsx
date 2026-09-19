@@ -2,7 +2,7 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { Tabs } from "antd";
-import styles from "./TabNav.module.scss";
+import styles from "./styles/TabNav.module.scss";
 
 export interface ITabNavItem {
   key: string;

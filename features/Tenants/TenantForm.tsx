@@ -1,24 +1,27 @@
 "use client";
 
 import { Button, Form, Input, Space } from "antd";
-import { useAppDispatch } from "@/store/hooks";
-import { addTenant, updateTenant } from "@/store/slices/tenantsSlice";
+import {
+  useAddTenantMutation,
+  useUpdateTenantMutation,
+} from "@/features/Tenants/api";
 import type { ITenantFormProps, ITenantFormValues } from "./types";
 import { LOGIN_SUFFIX } from "./utils";
 import styles from "./styles/TenantForm.module.scss";
 
 export default function TenantForm({ tenant, onClose }: ITenantFormProps) {
-  const dispatch = useAppDispatch();
+  const [addTenant, { isLoading: isAdding }] = useAddTenantMutation();
+  const [updateTenant, { isLoading: isUpdating }] = useUpdateTenantMutation();
   const [form] = Form.useForm<ITenantFormValues>();
 
-  const handleOnFinish = (values: ITenantFormValues) => {
+  const handleOnFinish = async (values: ITenantFormValues) => {
     const input = {
       customer: values.customer.trim(),
       login: `${values.tenantName.trim()}${LOGIN_SUFFIX}`,
     };
 
-    if (tenant) dispatch(updateTenant({ id: tenant.id, changes: input }));
-    else dispatch(addTenant(input));
+    if (tenant) await updateTenant({ id: tenant.id, changes: input }).unwrap();
+    else await addTenant(input).unwrap();
     onClose();
   };
 
@@ -73,7 +76,7 @@ export default function TenantForm({ tenant, onClose }: ITenantFormProps) {
         </Form.Item>
 
         <div className={styles.actions}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={isAdding || isUpdating}>
             {tenant ? "Save changes" : "Create tenant"}
           </Button>
           <Button onClick={onClose}>Cancel</Button>

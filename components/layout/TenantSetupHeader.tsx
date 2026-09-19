@@ -1,10 +1,9 @@
 "use client";
 
 import { Tag } from "antd";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { clearDateRange, selectDateRange } from "@/store/slices/tenantsSlice";
+import { useDateRangeFilter } from "@/features/Tenants/useDateRangeFilter";
 import TabNav, { type ITabNavItem } from "./TabNav";
-import styles from "./TenantSetupHeader.module.scss";
+import styles from "./styles/TenantSetupHeader.module.scss";
 
 const TENANT_SETUP_TABS: ITabNavItem[] = [
   {
@@ -20,10 +19,7 @@ const TENANT_SETUP_TABS: ITabNavItem[] = [
 const DATE_RANGE_LABELS = { "30d": "Last 30 days" } as const;
 
 export default function TenantSetupHeader() {
-  const dispatch = useAppDispatch();
-  const dateRange = useAppSelector(selectDateRange);
-
-  const handleOnClearDateRange = () => dispatch(clearDateRange());
+  const { dateRange, clearDateRange } = useDateRangeFilter();
 
   return (
     <div className={styles.header}>
@@ -33,7 +29,7 @@ export default function TenantSetupHeader() {
       <div className={styles.filters}>
         <span className={styles.filtersLabel}>FILTERS:</span>
         {dateRange ? (
-          <Tag closable onClose={handleOnClearDateRange}>
+          <Tag closable onClose={clearDateRange}>
             {DATE_RANGE_LABELS[dateRange]}
           </Tag>
         ) : (

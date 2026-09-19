@@ -1,8 +1,12 @@
 import { Button, Popconfirm, Tag, Tooltip, type TableColumnsType } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { MOCK_NOW } from "@/mock/tenants";
 import EditableCell from "./EditableCell";
-import type { ColumnFilters, ITenant, ITenantColumnsParams } from "./types";
+import type {
+  ColumnFilters,
+  DateRange,
+  ITenant,
+  ITenantColumnsParams,
+} from "./types";
 import styles from "./styles/TenantsTable.module.scss";
 
 export const LOGIN_SUFFIX = ".portal26.ai";
@@ -14,6 +18,41 @@ const TIER_CLASS = {
 } as const;
 
 const DAY_MS = 86_400_000;
+
+const compareText = (a: string, b: string) => a.localeCompare(b);
+
+export const EMPTY_TENANTS: ITenant[] = [];
+
+const DATE_RANGE_DAYS = { "30d": 30 } as const;
+
+export function filterTenants(
+  tenants: ITenant[],
+  search: string,
+  dateRange: DateRange,
+) {
+  const query = search.trim().toLowerCase();
+  const cutoff = dateRange
+    ? new Date(Date.now() - DATE_RANGE_DAYS[dateRange] * DAY_MS)
+        .toISOString()
+        .slice(0, 10)
+    : null;
+
+  return tenants.filter((t) => {
+    if (cutoff && t.createdAt < cutoff) return false;
+    if (!query) return true;
+    return [t.customer, t.login, t.customerGroup].some((field) =>
+      field.toLowerCase().includes(query),
+    );
+  });
+}
+
+export const getCustomerGroups = (tenants: ITenant[]) =>
+  [...new Set(tenants.map((t) => t.customerGroup))].sort(compareText);
+
+export function getTenantCounts(tenants: ITenant[]) {
+  const active = tenants.filter((t) => t.status === "active").length;
+  return { active, disabled: tenants.length - active };
+}
 
 const INCIDENT_BUCKETS: Record<string, (n: number) => boolean> = {
   none: (n) => n === 0,
@@ -64,7 +103,7 @@ export function matchesColumnFilters(tenant: ITenant, filters: ColumnFilters) {
 
   const created = selected(filters, "createdAt");
   if (created.length) {
-    const daysAgo = (Date.parse(MOCK_NOW) - Date.parse(tenant.createdAt)) / DAY_MS;
+    const daysAgo = (Date.now() - Date.parse(tenant.createdAt)) / DAY_MS;
     if (!created.some((bucket) => CREATED_BUCKETS[bucket]?.(daysAgo))) {
       return false;
     }
@@ -82,8 +121,6 @@ const dateFormat = new Intl.DateTimeFormat("en-US", {
 });
 
 export const formatDate = (iso: string) => dateFormat.format(new Date(iso));
-
-const compareText = (a: string, b: string) => a.localeCompare(b);
 
 const csvCell = (value: string | number) =>
   `"${String(value).replace(/"/g, '""')}"`;

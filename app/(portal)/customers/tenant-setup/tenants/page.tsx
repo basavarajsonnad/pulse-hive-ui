@@ -3,15 +3,16 @@
 import { useState } from "react";
 import { Button, Drawer } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
-import TenantForm from "@/components/tenants/TenantForm";
-import TenantsTable from "@/components/tenants/TenantsTable";
-import type { IDrawerState, ITenant } from "@/components/tenants/types";
-import { useAppSelector } from "@/store/hooks";
-import { selectTenantCounts } from "@/store/slices/tenantsSlice";
+import TenantForm from "@/features/Tenants/TenantForm";
+import TenantsTable from "@/features/Tenants/TenantsTable";
+import { EMPTY_TENANTS, getTenantCounts } from "@/features/Tenants/utils";
+import type { IDrawerState, ITenant } from "@/features/Tenants/types";
+import { useListTenantsQuery } from "@/features/Tenants/api";
 import styles from "./page.module.scss";
 
 export default function TenantsPage() {
-  const { active, disabled } = useAppSelector(selectTenantCounts);
+  const { data } = useListTenantsQuery();
+  const { active, disabled } = getTenantCounts(data ?? EMPTY_TENANTS);
   const [drawer, setDrawer] = useState<IDrawerState>({ open: false });
 
   const handleOnAdd = () => setDrawer({ open: true });

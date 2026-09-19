@@ -26,22 +26,6 @@ export type TenantChanges = Partial<
 
 export type DateRange = "30d" | null;
 
-export interface ITenantsState {
-  items: ITenant[];
-  search: string;
-  dateRange: DateRange;
-}
-
-export interface IMockIndustry {
-  name: string;
-  slug: string;
-  tier: TenantTier;
-  group: string;
-  users: number;
-  incidents: number;
-  daysAgo: number;
-}
-
 export type ColumnFilters = Parameters<
   NonNullable<TableProps<ITenant>["onChange"]>
 >[1];
