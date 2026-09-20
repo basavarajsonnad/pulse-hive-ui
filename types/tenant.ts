@@ -19,7 +19,7 @@ export type CreateTenantResponse = {
   status: string;
 };
 
-export type JobStatus = "in_progress" | "success" | "failure";
+export type JobStatus = "in_progress" | "complete" | "failed";
 
 export type JobStatusResponse = {
   jobId: string;
