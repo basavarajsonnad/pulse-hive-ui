@@ -1,5 +1,4 @@
 export const VALIDATION_FAILED = "VALIDATION_FAILED";
-export const JOB_NOT_FOUND = "JOB_NOT_FOUND";
 
 export type SsoConfig = {
   metadataUrl: string;
@@ -27,15 +26,12 @@ export type CreateTenantResponse = {
   status: ProvisioningStatus;
 };
 
-export type JobStatusResponse = {
-  jobId: string;
-  customerName: string;
-  status: ProvisioningStatus;
-};
-
 export type CustomerListItem = {
   customerName: string;
   tenantName: string | null;
+  status: ProvisioningStatus;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type CustomerListResponse = {
@@ -43,6 +39,6 @@ export type CustomerListResponse = {
 };
 
 export type ApiError = {
-  code: typeof VALIDATION_FAILED | typeof JOB_NOT_FOUND;
+  code: typeof VALIDATION_FAILED;
   message: string;
 };

@@ -29,10 +29,9 @@ function hiveError(status: number, body: unknown): HiveClientError {
   const record = body && typeof body === "object" ? (body as Record<string, unknown>) : null;
   const message =
     typeof record?.message === "string" ? record.message : "Unable to complete request";
-  const code = record?.code === "JOB_NOT_FOUND" ? "JOB_NOT_FOUND" : VALIDATION_FAILED;
-  const httpStatus = status === 404 || code === "JOB_NOT_FOUND" ? 404 : 400;
+  const httpStatus = status === 404 ? 404 : 400;
 
-  return new HiveClientError(httpStatus, code, message);
+  return new HiveClientError(httpStatus, VALIDATION_FAILED, message);
 }
 
 async function parseJson(response: Response): Promise<unknown> {
@@ -79,12 +78,6 @@ export async function createTenant(rawBody: string): Promise<unknown> {
 
 export async function listTenants(): Promise<unknown> {
   return hiveFetch("/api/v1/tenants", {
-    method: "GET",
-  });
-}
-
-export async function getJobStatus(jobId: string): Promise<unknown> {
-  return hiveFetch(`/api/v1/tenants/${encodeURIComponent(jobId)}/status`, {
     method: "GET",
   });
 }
