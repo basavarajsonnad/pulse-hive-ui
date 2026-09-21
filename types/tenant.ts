@@ -36,6 +36,10 @@ export type CustomerListItem = {
 
 export type CustomerListResponse = {
   customers: CustomerListItem[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 };
 
 export type ApiError = {

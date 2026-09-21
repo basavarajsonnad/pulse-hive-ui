@@ -7,9 +7,10 @@ function errorResponse(status: number, code: ApiError["code"], message: string) 
   return NextResponse.json(body, { status });
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const customers = await listTenants();
+    const search = new URL(request.url).search;
+    const customers = await listTenants(search);
     return NextResponse.json(customers, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {

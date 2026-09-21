@@ -76,8 +76,9 @@ export async function createTenant(rawBody: string): Promise<unknown> {
   });
 }
 
-export async function listTenants(): Promise<unknown> {
-  return hiveFetch("/api/v1/tenants", {
+export async function listTenants(search = ""): Promise<unknown> {
+  const query = search.startsWith("?") ? search : search ? `?${search}` : "";
+  return hiveFetch(`/api/v1/tenants${query}`, {
     method: "GET",
   });
 }
