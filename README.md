@@ -4,15 +4,15 @@ Next.js (App Router) + Ant Design + Redux Toolkit + SCSS.
 
 ## Stack
 
-| Concern | Choice |
-| --- | --- |
-| Framework | Next.js 16 (App Router) |
-| Language | TypeScript |
-| UI library | Ant Design 6 |
-| State | Redux Toolkit + React-Redux |
-| Styling | SCSS (CSS Modules) |
-| Package manager | pnpm |
-| Node | 22 (see `.nvmrc`) |
+| Concern         | Choice                      |
+| --------------- | --------------------------- |
+| Framework       | Next.js 16 (App Router)     |
+| Language        | TypeScript                  |
+| UI library      | Ant Design 6                |
+| State           | Redux Toolkit + React-Redux |
+| Styling         | SCSS (CSS Modules)          |
+| Package manager | pnpm                        |
+| Node            | 22 (see `.nvmrc`)           |
 
 ## Prerequisites
 
@@ -29,12 +29,12 @@ pnpm dev           # http://localhost:3000
 
 ## Scripts
 
-| Command | Description |
-| --- | --- |
-| `pnpm dev` | Start the dev server |
-| `pnpm build` | Production build |
+| Command      | Description                |
+| ------------ | -------------------------- |
+| `pnpm dev`   | Start the dev server       |
+| `pnpm build` | Production build           |
 | `pnpm start` | Serve the production build |
-| `pnpm lint` | Run ESLint |
+| `pnpm lint`  | Run ESLint                 |
 
 ## Project layout
 
@@ -47,9 +47,9 @@ app/                  App Router routes
 components/
   layout/             App shell only: Sidebar, TabNav, top bar, filter bar
 features/
-  Tenants/            Everything for tenants in one place: api.ts (GET /api/tenants),
+  Tenants/            Everything for tenants in one place: api.ts (GET/POST /api/tenants),
                       useDateRangeFilter.ts (date-range chip, kept in the URL), types.ts,
-                      utils.tsx, TenantsTable / TenantForm / EditableCell, styles/
+                      utils.tsx (API -> table mapping, columns), TenantsTable / TenantForm, styles/
   Login/              slice.ts: authToken + user details (used by axios baseQuery)
 shared/
   Notification/       Success/error toasts driven by redux (setNotification)
@@ -72,7 +72,7 @@ styles/
 - **API calls**: every feature has an `api.ts` (`createApi` + `axiosBaseQuery()`).
   Register its `reducerPath`/`reducer` in `redux/rootReducer.ts` and its
   `middleware` in `redux/store.ts`. Endpoint paths live in `utils/constants/urlConstants.ts`.
-  Set `NEXT_PUBLIC_API_URL` (and optionally `NEXT_PUBLIC_API_VERSION`).
+  Set `BASE_URL` in `.env`; `next.config.ts` proxies `/api/*` to it (same-origin, no CORS).
 - **State**: a slice is only for state the axios layer needs (login, notification).
   Everything else is `useState`, or the URL when several layouts share it. The
   redux `Provider` lives in `app/(portal)/layout.tsx` (a client layout).

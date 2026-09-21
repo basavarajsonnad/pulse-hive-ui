@@ -3,23 +3,35 @@
 import { useState } from "react";
 import { Button, Drawer } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
+import TenantDetails from "@/features/Tenants/TenantDetails";
 import TenantForm from "@/features/Tenants/TenantForm";
 import TenantsTable from "@/features/Tenants/TenantsTable";
+import type { ITenant } from "@/features/Tenants/types";
 import { EMPTY_TENANTS, getTenantCounts } from "@/features/Tenants/utils";
-import type { IDrawerState, ITenant } from "@/features/Tenants/types";
 import { useListTenantsQuery } from "@/features/Tenants/api";
 import styles from "./page.module.scss";
 
 export default function TenantsPage() {
   const { data } = useListTenantsQuery();
-  const { active, disabled } = getTenantCounts(data ?? EMPTY_TENANTS);
-  const [drawer, setDrawer] = useState<IDrawerState>({ open: false });
+  const { active, inProgress, failed } = getTenantCounts(
+    data?.jobs ?? EMPTY_TENANTS,
+  );
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState<string>();
 
-  const handleOnAdd = () => setDrawer({ open: true });
+  const selectedTenant = data?.jobs.find((t) => t.jobId === selectedId);
 
-  const handleOnEdit = (tenant: ITenant) => setDrawer({ open: true, tenant });
+  const handleOnAdd = () => setDrawerOpen(true);
 
-  const handleOnCloseDrawer = () => setDrawer((d) => ({ ...d, open: false }));
+  const handleOnCloseDrawer = () => setDrawerOpen(false);
+
+  const handleOnRowClick = (tenant: ITenant) => {
+    setSelectedId(tenant.jobId);
+    setDetailsOpen(true);
+  };
+
+  const handleOnCloseDetails = () => setDetailsOpen(false);
 
   return (
     <>
@@ -27,30 +39,37 @@ export default function TenantsPage() {
         <div>
           <h1 className={styles.title}>Tenants</h1>
           <p className={styles.subtitle}>
-            All customer groups · {active} active · {disabled} disabled · edit
-            in place (pencil) · click a status pill to toggle
+            All customer groups · {active} active · {inProgress} in progress ·{" "}
+            {failed} failed
           </p>
         </div>
-        <Button
-          type="primary"
-          icon={<PlusOutlined />}
-          onClick={handleOnAdd}
-        >
+        <Button type="primary" icon={<PlusOutlined />} onClick={handleOnAdd}>
           Add customer
         </Button>
       </div>
 
-      <TenantsTable onEdit={handleOnEdit} />
+      <TenantsTable onRowClick={handleOnRowClick} />
 
       <Drawer
-        open={drawer.open}
+        open={drawerOpen}
         onClose={handleOnCloseDrawer}
-        title={drawer.tenant ? "Edit customer" : "Add customer (single)"}
+        title="Add customer (single)"
         size={450}
         closable={{ placement: "end" }}
         destroyOnHidden
       >
-        <TenantForm tenant={drawer.tenant} onClose={handleOnCloseDrawer} />
+        <TenantForm onClose={handleOnCloseDrawer} />
+      </Drawer>
+
+      <Drawer
+        open={detailsOpen}
+        onClose={handleOnCloseDetails}
+        title={selectedTenant?.customerName}
+        size={450}
+        closable={{ placement: "end" }}
+        destroyOnHidden
+      >
+        {selectedTenant && <TenantDetails tenant={selectedTenant} />}
       </Drawer>
     </>
   );

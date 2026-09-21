@@ -1,83 +1,117 @@
 "use client";
 
-import { Button, Form, Input, Space } from "antd";
+import { Button, Form, Input, Select } from "antd";
+import { useAddTenantMutation } from "@/features/Tenants/api";
+import { TENANT_FORM_INITIAL_VALUES } from "@/utils/constants/appConstants";
 import {
-  useAddTenantMutation,
-  useUpdateTenantMutation,
-} from "@/features/Tenants/api";
-import type { ITenantFormProps, ITenantFormValues } from "./types";
-import { LOGIN_SUFFIX } from "./utils";
+  TENANT_TIERS,
+  type ICreateTenantRequest,
+  type ITenantFormProps,
+} from "./types";
 import styles from "./styles/TenantForm.module.scss";
 
-export default function TenantForm({ tenant, onClose }: ITenantFormProps) {
-  const [addTenant, { isLoading: isAdding }] = useAddTenantMutation();
-  const [updateTenant, { isLoading: isUpdating }] = useUpdateTenantMutation();
-  const [form] = Form.useForm<ITenantFormValues>();
+const CUSTOMER_NAME_PATTERN = /^[a-zA-Z0-9-]{3,25}$/;
 
-  const handleOnFinish = async (values: ITenantFormValues) => {
-    const input = {
-      customer: values.customer.trim(),
-      login: `${values.tenantName.trim()}${LOGIN_SUFFIX}`,
-    };
+const TIER_OPTIONS = TENANT_TIERS.map((tier) => ({
+  value: tier.toLowerCase(),
+  label: tier,
+}));
 
-    if (tenant) await updateTenant({ id: tenant.id, changes: input }).unwrap();
-    else await addTenant(input).unwrap();
+export default function TenantForm({ onClose }: ITenantFormProps) {
+  const [addTenant, { isLoading }] = useAddTenantMutation();
+  const handleOnFinish = async (values: ICreateTenantRequest) => {
+    await addTenant(values).unwrap();
     onClose();
   };
 
   return (
     <>
-      {!tenant && (
-        <p className={styles.intro}>
-          Adds a single customer with your saved defaults. Taking on many at
-          once? Use <strong>Bulk Upload</strong> instead.
-        </p>
-      )}
+      <p className={styles.intro}>
+        Adds a single customer with your saved defaults. Taking on many at once?
+        Use <strong>Bulk Upload</strong> instead.
+      </p>
 
-      <Form<ITenantFormValues>
-        form={form}
+      <Form<ICreateTenantRequest>
         layout="vertical"
         requiredMark={false}
         onFinish={handleOnFinish}
-        initialValues={
-          tenant
-            ? {
-                customer: tenant.customer,
-                tenantName: tenant.login.replace(LOGIN_SUFFIX, ""),
-              }
-            : undefined
-        }
+        initialValues={TENANT_FORM_INITIAL_VALUES}
       >
         <Form.Item
-          name="customer"
+          name="customerName"
           label="Customer name"
-          rules={[{ required: true, whitespace: true, message: "Enter a customer name" }]}
+          rules={[
+            { required: true, message: "Enter a customer name" },
+            {
+              pattern: CUSTOMER_NAME_PATTERN,
+              message: "Use 3–25 characters: letters, numbers and hyphens only",
+            },
+          ]}
         >
           <Input />
         </Form.Item>
 
-        <Form.Item label="Tenant name (no spaces)">
-          <Space.Compact block>
-            <Form.Item
-              name="tenantName"
-              noStyle
-              rules={[
-                { required: true, message: "Enter a tenant name" },
-                {
-                  pattern: /^[a-z0-9-]+$/i,
-                  message: "Use letters, numbers and hyphens only",
-                },
-              ]}
-            >
-              <Input />
-            </Form.Item>
-            <Space.Addon>{LOGIN_SUFFIX}</Space.Addon>
-          </Space.Compact>
+        <Form.Item
+          name="liscencePackage"
+          label="License package"
+          extra="Basic: Discovery, Visibility & Risk · Intermediate: + Preventive Controls · Advanced: all capabilities"
+        >
+          <Select options={TIER_OPTIONS} />
+        </Form.Item>
+
+        <Form.Item
+          name={["sso", "providerName"]}
+          label="Provider name"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Enter a provider name",
+            },
+          ]}
+        >
+          <Input placeholder="Acme-Okta" />
+        </Form.Item>
+
+        <Form.Item
+          name={["sso", "metadataUrl"]}
+          label="IdP metadata URL"
+          rules={[{ required: true, whitespace: true, message: "Enter a URL" }]}
+        >
+          <Input placeholder="https://your-idp.com/app/.../sso/saml/metadata" />
+        </Form.Item>
+
+        <Form.Item
+          name={["sso", "emailAttribute"]}
+          label="Email attribute"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Enter an email attribute",
+            },
+          ]}
+        >
+          <Input />
+        </Form.Item>
+
+        <Form.Item
+          name={["sso", "groupsAttribute"]}
+          label="Groups attribute"
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "Enter a groups attribute",
+            },
+          ]}
+        >
+          <Input />
         </Form.Item>
 
         <div className={styles.actions}>
-          <Button type="primary" htmlType="submit" loading={isAdding || isUpdating}>
-            {tenant ? "Save changes" : "Create tenant"}
+          <Button type="primary" htmlType="submit" loading={isLoading}>
+            Create tenant
           </Button>
           <Button onClick={onClose}>Cancel</Button>
         </div>

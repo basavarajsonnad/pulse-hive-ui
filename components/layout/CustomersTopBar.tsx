@@ -13,8 +13,6 @@ const CUSTOMER_TABS: ITabNavItem[] = [
     href: "/customers/tenant-setup/tenants",
     match: "/customers/tenant-setup",
   },
-  { key: "customer-groups", label: "Customer Groups" },
-  { key: "audit-logs", label: "Audit Logs" },
 ];
 
 export default function CustomersTopBar() {

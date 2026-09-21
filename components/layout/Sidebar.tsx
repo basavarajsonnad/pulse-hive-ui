@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Badge } from "antd";
-import { BuildOutlined, HomeOutlined } from "@ant-design/icons";
+import { BuildOutlined } from "@ant-design/icons";
 import type { ReactNode } from "react";
 import styles from "./styles/Sidebar.module.scss";
 
@@ -12,15 +12,12 @@ interface INavItem {
   key: string;
   label: string;
   icon?: ReactNode;
-  /** Items without an href are placeholders for pages not built yet. */
   href?: string;
-  /** Path prefix that marks this item active (defaults to href). */
   match?: string;
   badge?: number;
 }
 
 const NAV_ITEMS: INavItem[] = [
-  { key: "home", label: "Home", icon: <HomeOutlined /> },
   {
     key: "customers",
     label: "Customers",
@@ -28,8 +25,6 @@ const NAV_ITEMS: INavItem[] = [
     href: "/customers/tenant-setup/tenants",
     match: "/customers",
   },
-  { key: "operations", label: "Operations", badge: 44 },
-  { key: "administration", label: "Administration", badge: 3 },
 ];
 
 export default function Sidebar() {
@@ -38,11 +33,18 @@ export default function Sidebar() {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <Image src="/logo.png" alt="portal26" width={112} height={25} priority />
+        <Image
+          src="/logo.png"
+          alt="portal26"
+          width={112}
+          height={25}
+          priority
+        />
       </div>
       <nav className={styles.nav} aria-label="Primary">
         {NAV_ITEMS.map((item) => {
-          const active = !!item.href && pathname.startsWith(item.match ?? item.href);
+          const active =
+            !!item.href && pathname.startsWith(item.match ?? item.href);
           const className = [
             styles.item,
             active && styles.active,

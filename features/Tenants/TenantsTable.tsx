@@ -18,40 +18,25 @@ import {
   FullscreenOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import {
-  useDeleteTenantMutation,
-  useListTenantsQuery,
-  useToggleTenantStatusMutation,
-  useUpdateTenantMutation,
-} from "@/features/Tenants/api";
-import type {
-  ColumnFilters,
-  ITenant,
-  ITenantsTableProps,
-  TenantChanges,
-} from "./types";
+import { useListTenantsQuery } from "@/features/Tenants/api";
+import type { ColumnFilters, ITenant, ITenantsTableProps } from "./types";
 import {
   EMPTY_TENANTS,
   downloadTenantsCsv,
   filterTenants,
-  getCustomerGroups,
   getTenantColumns,
   matchesColumnFilters,
 } from "./utils";
 import { useDateRangeFilter } from "./useDateRangeFilter";
 import styles from "./styles/TenantsTable.module.scss";
 
-export default function TenantsTable({ onEdit }: ITenantsTableProps) {
+export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
   const { dateRange } = useDateRangeFilter();
   const [search, setSearch] = useState("");
 
   const { data, isLoading, isError, refetch } = useListTenantsQuery();
-  const [updateTenant] = useUpdateTenantMutation();
-  const [toggleTenantStatus] = useToggleTenantStatusMutation();
-  const [deleteTenant] = useDeleteTenantMutation();
 
-  const allTenants = data ?? EMPTY_TENANTS;
-  const customerGroups = useMemo(() => getCustomerGroups(allTenants), [allTenants]);
+  const allTenants = data?.jobs ?? EMPTY_TENANTS;
 
   const [columnFilters, setColumnFilters] = useState<ColumnFilters>({});
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
@@ -71,7 +56,10 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
       setFullscreen(document.fullscreenElement === cardRef.current);
     document.addEventListener("fullscreenchange", handleOnFullscreenChange);
     return () =>
-      document.removeEventListener("fullscreenchange", handleOnFullscreenChange);
+      document.removeEventListener(
+        "fullscreenchange",
+        handleOnFullscreenChange,
+      );
   }, []);
 
   const handleOnToggleFullscreen = () => {
@@ -79,26 +67,16 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
     else cardRef.current?.requestFullscreen();
   };
 
-  const handleOnUpdate = (id: string, changes: TenantChanges) =>
-    updateTenant({ id, changes });
-
-  const handleOnDelete = (id: string) => deleteTenant(id);
-
-  const handleOnToggleStatus = (id: string) => toggleTenantStatus(id);
-
-    const handleOnTableChange: TableProps<ITenant>["onChange"] = (_, filters) =>
+  const handleOnTableChange: TableProps<ITenant>["onChange"] = (_, filters) =>
     setColumnFilters(filters);
 
   const handleOnDownload = () => downloadTenantsCsv(tableData, "tenants.csv");
 
-  const columns = getTenantColumns({
-    columnFilters,
-    customerGroups,
-    onEdit,
-    onUpdate: handleOnUpdate,
-    onDelete: handleOnDelete,
-    onToggleStatus: handleOnToggleStatus,
+  const handleOnRow: TableProps<ITenant>["onRow"] = (tenant) => ({
+    onClick: () => onRowClick(tenant),
   });
+
+  const columns = getTenantColumns(columnFilters);
 
   const toggleableColumns = columns
     .filter((c) => c.key !== "customer")
@@ -109,7 +87,9 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
 
   const handleOnColumnsChange = (shown: string[]) =>
     setHiddenColumns(
-      toggleableColumns.map((c) => c.value).filter((key) => !shown.includes(key)),
+      toggleableColumns
+        .map((c) => c.value)
+        .filter((key) => !shown.includes(key)),
     );
 
   const getPopupContainer = () => cardRef.current ?? document.body;
@@ -146,7 +126,11 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
             />
           }
         >
-          <Button size="small" icon={<TableOutlined />} aria-label="Choose columns" />
+          <Button
+            size="small"
+            icon={<TableOutlined />}
+            aria-label="Choose columns"
+          />
         </Popover>
         <Tooltip title="Download CSV">
           <Button
@@ -159,7 +143,9 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
         <Tooltip title={fullscreen ? "Exit full screen" : "Full screen"}>
           <Button
             size="small"
-            icon={fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+            icon={
+              fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />
+            }
             aria-label="Toggle full screen"
             onClick={handleOnToggleFullscreen}
           />
@@ -183,11 +169,12 @@ export default function TenantsTable({ onEdit }: ITenantsTableProps) {
       <ConfigProvider getPopupContainer={getPopupContainer}>
         <Table<ITenant>
           size="small"
-          rowKey="id"
+          rowKey="jobId"
           columns={visibleColumns}
           dataSource={tableData}
           loading={isLoading}
           onChange={handleOnTableChange}
+          onRow={handleOnRow}
           scroll={{ x: "max-content" }}
           pagination={{
             placement: ["bottomStart"],

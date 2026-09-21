@@ -7,9 +7,7 @@ import styles from "./styles/TabNav.module.scss";
 export interface ITabNavItem {
   key: string;
   label: string;
-  /** Items without an href are placeholders for pages not built yet. */
   href?: string;
-  /** Path prefix that marks this tab active (defaults to href). */
   match?: string;
 }
 

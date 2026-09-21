@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // Proxy /api/* to the backend so the browser stays same-origin (no CORS).
+  async rewrites() {
+    const { BASE_URL } = process.env;
+    return BASE_URL
+      ? [{ source: "/api/:path*", destination: `${BASE_URL}/api/:path*` }]
+      : [];
+  },
 };
 
 export default nextConfig;

@@ -7,7 +7,9 @@ import { clearNotification } from "./slice";
 
 export default function Notification() {
   const dispatch = useAppDispatch();
-  const { type, message: content } = useAppSelector((state) => state.notification);
+  const { type, message: content } = useAppSelector(
+    (state) => state.notification,
+  );
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {

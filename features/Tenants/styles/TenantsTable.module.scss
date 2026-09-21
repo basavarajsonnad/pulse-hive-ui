@@ -58,11 +58,16 @@
   padding: 0 14px;
 }
 
+.card :global(.ant-table-row) {
+  cursor: pointer;
+}
+
 .customerName {
   font-weight: 500;
 }
 
 .tier {
+  text-transform: capitalize;
   margin: 0;
   padding: 0 6px;
   border-radius: 4px;
@@ -70,17 +75,17 @@
   line-height: 18px;
 }
 
-.tierBasic {
+.tier.tierBasic {
   background: #f0f0f3;
   color: #4a4d5e;
 }
 
-.tierIntermediate {
+.tier.tierIntermediate {
   background: #e3ecff;
   color: #2b5bd7;
 }
 
-.tierAdvanced {
+.tier.tierAdvanced {
   background: #fff1d6;
   color: #9a5b00;
 }
@@ -94,13 +99,16 @@
   }
 }
 
+.loginDisabled {
+  color: vars.$color-faint;
+  cursor: not-allowed;
+}
+
 .status {
   padding: 1px 10px;
-  border: 0;
   border-radius: 10px;
   font-size: 11px;
   font-weight: 500;
-  cursor: pointer;
 }
 
 .statusActive {
@@ -108,23 +116,16 @@
   color: #1a7f43;
 }
 
-.statusDisabled {
+.statusInProgress {
+  background: #fff1d6;
+  color: #9a5b00;
+}
+
+.statusFailed {
   background: #fde3e3;
   color: #b42323;
 }
 
 .muted {
   color: vars.$color-muted;
-}
-
-.actions {
-  display: inline-flex;
-  gap: 2px;
-  opacity: 0;
-  transition: opacity 0.15s;
-}
-
-.card :global(.ant-table-row):hover .actions,
-.actions:focus-within {
-  opacity: 1;
 }

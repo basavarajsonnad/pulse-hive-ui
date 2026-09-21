@@ -11,9 +11,6 @@ const TENANT_SETUP_TABS: ITabNavItem[] = [
     label: "Tenants",
     href: "/customers/tenant-setup/tenants",
   },
-  { key: "landscape", label: "Landscape" },
-  { key: "search", label: "Search" },
-  { key: "bulk-upload", label: "Bulk Upload" },
 ];
 
 const DATE_RANGE_LABELS = { "30d": "Last 30 days" } as const;

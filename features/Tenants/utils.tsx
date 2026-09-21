@@ -1,21 +1,27 @@
-import { Button, Popconfirm, Tag, Tooltip, type TableColumnsType } from "antd";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import EditableCell from "./EditableCell";
+import { Tag, type TableColumnsType } from "antd";
+import { TENANT_TIERS } from "./types";
 import type {
   ColumnFilters,
   DateRange,
   ITenant,
-  ITenantColumnsParams,
+  ITenantProps,
+  TenantStatus,
 } from "./types";
 import styles from "./styles/TenantsTable.module.scss";
 
-export const LOGIN_SUFFIX = ".portal26.ai";
+const LOGIN_SUFFIX = ".portal26.ai";
 
-const TIER_CLASS = {
-  Basic: styles.tierBasic,
-  Intermediate: styles.tierIntermediate,
-  Advanced: styles.tierAdvanced,
-} as const;
+export const toTenantLogin = (customer: string) =>
+  `${customer
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")}${LOGIN_SUFFIX}`;
+
+const TIER_CLASS: Record<string, string> = {
+  basic: styles.tierBasic,
+  intermediate: styles.tierIntermediate,
+  advanced: styles.tierAdvanced,
+};
 
 const DAY_MS = 86_400_000;
 
@@ -40,36 +46,44 @@ export function filterTenants(
   return tenants.filter((t) => {
     if (cutoff && t.createdAt < cutoff) return false;
     if (!query) return true;
-    return [t.customer, t.login, t.customerGroup].some((field) =>
+    return [t.customerName, toTenantLogin(t.customerName)].some((field) =>
       field.toLowerCase().includes(query),
     );
   });
 }
 
-export const getCustomerGroups = (tenants: ITenant[]) =>
-  [...new Set(tenants.map((t) => t.customerGroup))].sort(compareText);
-
 export function getTenantCounts(tenants: ITenant[]) {
-  const active = tenants.filter((t) => t.status === "active").length;
-  return { active, disabled: tenants.length - active };
+  const count = (status: TenantStatus) =>
+    tenants.filter((t) => t.status === status).length;
+  return {
+    active: count("active"),
+    inProgress: count("in_progress"),
+    failed: count("failed"),
+  };
 }
 
-const INCIDENT_BUCKETS: Record<string, (n: number) => boolean> = {
-  none: (n) => n === 0,
-  low: (n) => n >= 1 && n <= 3,
-  high: (n) => n >= 4,
+export const STATUS_FILTER_OPTIONS = [
+  { text: "In Progress", value: "in_progress" },
+  { text: "Active", value: "active" },
+  { text: "Failed", value: "failed" },
+];
+
+const STATUS_LABELS: Record<TenantStatus, string> = {
+  in_progress: "In Progress",
+  active: "Active",
+  failed: "Failed",
 };
 
-export const STATUS_FILTER_OPTIONS = [
-  { text: "Active", value: "active" },
-  { text: "Disabled", value: "disabled" },
-];
+const STATUS_CLASS: Record<TenantStatus, string> = {
+  in_progress: styles.statusInProgress,
+  active: styles.statusActive,
+  failed: styles.statusFailed,
+};
 
-export const INCIDENT_FILTER_OPTIONS = [
-  { text: "No incidents", value: "none" },
-  { text: "1–3", value: "low" },
-  { text: "4 or more", value: "high" },
-];
+export const TIER_FILTER_OPTIONS = TENANT_TIERS.map((tier) => ({
+  text: tier,
+  value: tier.toLowerCase(),
+}));
 
 const CREATED_BUCKETS: Record<string, (daysAgo: number) => boolean> = {
   "7d": (d) => d <= 7,
@@ -90,16 +104,8 @@ export function matchesColumnFilters(tenant: ITenant, filters: ColumnFilters) {
   const status = selected(filters, "status");
   if (status.length && !status.includes(tenant.status)) return false;
 
-  const groups = selected(filters, "customerGroup");
-  if (groups.length && !groups.includes(tenant.customerGroup)) return false;
-
-  const incidents = selected(filters, "incidents");
-  if (
-    incidents.length &&
-    !incidents.some((bucket) => INCIDENT_BUCKETS[bucket]?.(tenant.incidents))
-  ) {
-    return false;
-  }
+  const tiers = selected(filters, "tier");
+  if (tiers.length && !tiers.includes(tenant.liscencePackage)) return false;
 
   const created = selected(filters, "createdAt");
   if (created.length) {
@@ -128,27 +134,25 @@ const csvCell = (value: string | number) =>
 export function downloadTenantsCsv(tenants: ITenant[], filename: string) {
   const header = [
     "Customer",
-    "Tier",
+    "License Package",
     "Tenant / Login",
-    "Customer Group",
     "Status",
-    "Users",
-    "Incidents",
     "Created",
   ];
   const rows = tenants.map((t) => [
-    t.customer,
-    t.tier,
-    t.login,
-    t.customerGroup,
+    t.customerName,
+    t.liscencePackage,
+    toTenantLogin(t.customerName),
     t.status,
-    t.users,
-    t.incidents,
     t.createdAt,
   ]);
-  const csv = [header, ...rows].map((row) => row.map(csvCell).join(",")).join("\n");
+  const csv = [header, ...rows]
+    .map((row) => row.map(csvCell).join(","))
+    .join("\n");
 
-  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const url = URL.createObjectURL(
+    new Blob([csv], { type: "text/csv;charset=utf-8" }),
+  );
   const link = document.createElement("a");
   link.href = url;
   link.download = filename;
@@ -156,108 +160,72 @@ export function downloadTenantsCsv(tenants: ITenant[], filename: string) {
   URL.revokeObjectURL(url);
 }
 
-export function getTenantColumns({
-  columnFilters,
-  customerGroups,
-  onEdit,
-  onUpdate,
-  onDelete,
-  onToggleStatus,
-}: ITenantColumnsParams): TableColumnsType<ITenant> {
+export const TierTag = ({ tenant }: ITenantProps) => (
+  <Tag
+    className={`${styles.tier} ${TIER_CLASS[tenant.liscencePackage]}`}
+    variant="filled"
+  >
+    {tenant.liscencePackage}
+  </Tag>
+);
+
+export const StatusPill = ({ tenant }: ITenantProps) => (
+  <span className={`${styles.status} ${STATUS_CLASS[tenant.status]}`}>
+    {STATUS_LABELS[tenant.status]}
+  </span>
+);
+
+export const TenantLogin = ({ tenant }: ITenantProps) => {
+  const login = toTenantLogin(tenant.customerName);
+
+  return tenant.status === "failed" ? (
+    <span className={styles.loginDisabled} aria-disabled="true">
+      {login} <span aria-hidden>↗</span>
+    </span>
+  ) : (
+    <a
+      className={styles.login}
+      href={`https://${login}`}
+      target="_blank"
+      rel="noreferrer"
+      onClick={(e) => e.stopPropagation()}
+    >
+      {login} <span aria-hidden>↗</span>
+    </a>
+  );
+};
+
+export function getTenantColumns(
+  columnFilters: ColumnFilters,
+): TableColumnsType<ITenant> {
   return [
     {
       key: "customer",
       title: "Customer",
-      sorter: (a, b) => compareText(a.customer, b.customer),
+      sorter: (a, b) => compareText(a.customerName, b.customerName),
       render: (_, tenant) => (
-        <EditableCell
-          value={tenant.customer}
-          label="customer name"
-          onSave={(customer) => onUpdate(tenant.id, { customer })}
-        >
-          <span className={styles.customerName}>{tenant.customer}</span>
-          <Tag
-            className={`${styles.tier} ${TIER_CLASS[tenant.tier]}`}
-            variant="filled"
-          >
-            {tenant.tier}
-          </Tag>
-        </EditableCell>
+        <span className={styles.customerName}>{tenant.customerName}</span>
       ),
     },
     {
       key: "login",
       title: "Tenant / Login",
-      sorter: (a, b) => compareText(a.login, b.login),
-      render: (_, tenant) => (
-        <EditableCell
-          value={tenant.login}
-          label="tenant login"
-          onSave={(login) => onUpdate(tenant.id, { login })}
-        >
-          <a
-            className={styles.login}
-            href={`https://${tenant.login}`}
-            target="_blank"
-            rel="noreferrer"
-          >
-            {tenant.login} <span aria-hidden>↗</span>
-          </a>
-        </EditableCell>
-      ),
+      sorter: (a, b) => compareText(a.customerName, b.customerName),
+      render: (_, tenant) => <TenantLogin tenant={tenant} />,
     },
     {
-      key: "customerGroup",
-      title: "Customer Group",
-      sorter: (a, b) => compareText(a.customerGroup, b.customerGroup),
-      filters: customerGroups.map((group) => ({ text: group, value: group })),
-      filteredValue: columnFilters.customerGroup ?? null,
-      render: (_, tenant) => (
-        <EditableCell
-          value={tenant.customerGroup}
-          label="customer group"
-          options={customerGroups}
-          onSave={(customerGroup) => onUpdate(tenant.id, { customerGroup })}
-        >
-          {tenant.customerGroup}
-        </EditableCell>
-      ),
+      key: "tier",
+      title: "License Package",
+      filters: TIER_FILTER_OPTIONS,
+      filteredValue: columnFilters.tier ?? null,
+      render: (_, tenant) => <TierTag tenant={tenant} />,
     },
     {
       key: "status",
       title: "Status",
       filters: STATUS_FILTER_OPTIONS,
       filteredValue: columnFilters.status ?? null,
-      render: (_, tenant) => (
-        <Tooltip title="Click to toggle">
-          <button
-            type="button"
-            className={`${styles.status} ${
-              tenant.status === "active"
-                ? styles.statusActive
-                : styles.statusDisabled
-            }`}
-            onClick={() => onToggleStatus(tenant.id)}
-          >
-            {tenant.status === "active" ? "Active" : "Disabled"}
-          </button>
-        </Tooltip>
-      ),
-    },
-    {
-      key: "users",
-      title: "Users",
-      align: "right",
-      sorter: (a, b) => a.users - b.users,
-      render: (_, tenant) => tenant.users,
-    },
-    {
-      key: "incidents",
-      title: "Incidents",
-      align: "right",
-      filters: INCIDENT_FILTER_OPTIONS,
-      filteredValue: columnFilters.incidents ?? null,
-      render: (_, tenant) => tenant.incidents,
+      render: (_, tenant) => <StatusPill tenant={tenant} />,
     },
     {
       key: "createdAt",
@@ -267,38 +235,6 @@ export function getTenantColumns({
       filteredValue: columnFilters.createdAt ?? null,
       render: (_, tenant) => (
         <span className={styles.muted}>{formatDate(tenant.createdAt)}</span>
-      ),
-    },
-    {
-      key: "actions",
-      title: "Actions",
-      align: "right",
-      render: (_, tenant) => (
-        <span className={styles.actions}>
-          <Tooltip title="Edit">
-            <Button
-              type="text"
-              size="small"
-              icon={<EditOutlined />}
-              aria-label={`Edit ${tenant.customer}`}
-              onClick={() => onEdit(tenant)}
-            />
-          </Tooltip>
-          <Popconfirm
-            title="Delete this customer?"
-            description={tenant.customer}
-            okText="Delete"
-            okButtonProps={{ danger: true }}
-            onConfirm={() => onDelete(tenant.id)}
-          >
-            <Button
-              type="text"
-              size="small"
-              icon={<DeleteOutlined />}
-              aria-label={`Delete ${tenant.customer}`}
-            />
-          </Popconfirm>
-        </span>
       ),
     },
   ];
