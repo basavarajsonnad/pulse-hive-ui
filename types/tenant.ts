@@ -13,29 +13,33 @@ export type CreateTenantRequest = {
   sso: SsoConfig;
 };
 
+/** Hive DB / V1 CHECK values. UI mapping from in_progress comes later. */
+export type ProvisioningStatus =
+  | "queued"
+  | "running"
+  | "completed"
+  | "completed_with_errors"
+  | "failed";
+
 export type CreateTenantResponse = {
   jobId: string;
   customerName: string;
-  status: string;
+  status: ProvisioningStatus;
 };
-
-export type JobStatus = "in_progress" | "complete" | "failed";
 
 export type JobStatusResponse = {
   jobId: string;
   customerName: string;
-  status: JobStatus;
+  status: ProvisioningStatus;
 };
 
-export type JobListItem = {
-  jobId: string;
+export type CustomerListItem = {
   customerName: string;
-  status: JobStatus;
-  createdAt: string;
+  tenantName: string | null;
 };
 
-export type JobListResponse = {
-  jobs: JobListItem[];
+export type CustomerListResponse = {
+  customers: CustomerListItem[];
 };
 
 export type ApiError = {

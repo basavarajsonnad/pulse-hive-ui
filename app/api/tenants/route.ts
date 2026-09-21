@@ -9,8 +9,8 @@ function errorResponse(status: number, code: ApiError["code"], message: string) 
 
 export async function GET() {
   try {
-    const jobs = await listTenants();
-    return NextResponse.json(jobs, { status: 200 });
+    const customers = await listTenants();
+    return NextResponse.json(customers, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {
       return errorResponse(error.status, error.code, error.message);
