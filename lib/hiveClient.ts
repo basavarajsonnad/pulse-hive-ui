@@ -83,4 +83,11 @@ export async function listTenants(search = ""): Promise<unknown> {
   });
 }
 
+export async function getSigninRegistration(customerName: string): Promise<unknown> {
+  const query = new URLSearchParams({ customerName }).toString();
+  return hiveFetch(`/api/v1/tenants/signin?${query}`, {
+    method: "GET",
+  });
+}
+
 

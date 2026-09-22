@@ -47,6 +47,10 @@ export type CustomerListResponse = {
   totalPages: number;
 };
 
+export type SigninRegistrationResponse = {
+  registrationOutput: string | null;
+};
+
 export type ApiError = {
   code: typeof VALIDATION_FAILED;
   message: string;
