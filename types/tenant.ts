@@ -9,6 +9,7 @@ export type SsoConfig = {
 
 export type CreateTenantRequest = {
   customerName: string;
+  licensePackage: "basic" | "intermediate" | "advanced";
   sso: SsoConfig;
 };
 
@@ -23,12 +24,14 @@ export type ProvisioningStatus =
 export type CreateTenantResponse = {
   jobId: string;
   customerName: string;
+  licensePackage: "basic" | "intermediate" | "advanced";
   status: ProvisioningStatus;
 };
 
 export type CustomerListItem = {
   customerName: string;
   tenantName: string | null;
+  licensePackage: "basic" | "intermediate" | "advanced";
   status: ProvisioningStatus;
   createdAt: string;
   updatedAt: string;
