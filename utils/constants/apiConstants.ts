@@ -12,5 +12,4 @@ export const REFRESH_THRESHOLD = 60;
 
 export const API_STATUS = {
   UNAUTHORIZED: 401,
-  UNPROCESSABLE_CONTENT: 422,
 } as const;

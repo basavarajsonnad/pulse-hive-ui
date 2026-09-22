@@ -97,7 +97,7 @@ const axiosBaseQuery =
         return {
           error: {
             status: error.response?.status,
-            data: error.response?.data?.errors,
+            data: error.response?.data,
           },
         };
       }

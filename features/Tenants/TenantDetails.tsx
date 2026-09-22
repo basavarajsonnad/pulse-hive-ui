@@ -27,7 +27,7 @@ export default function TenantDetails({ tenant }: ITenantProps) {
                 <dl className={styles.list}>
                   <div className={styles.row}>
                     <dt>Tenant name</dt>
-                    <dd>{tenant.customerName}</dd>
+                    <dd>{tenant?.tenantName}</dd>
                   </div>
                   <div className={styles.row}>
                     <dt>Created</dt>

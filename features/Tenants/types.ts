@@ -4,26 +4,35 @@ export const TENANT_TIERS = ["Basic", "Intermediate", "Advanced"] as const;
 
 export type TenantStatus = "in_progress" | "active" | "failed";
 
+export interface ITenant {
+  customerName: string;
+  tenantName: string | null;
+  liscencePackage: string;
+  status: TenantStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ITenantsResponse {
+  customers: ITenant[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+}
+
+export interface ITenantsQuery {
+  page: number;
+  size: number;
+}
+
 export type DateRange = "30d" | null;
 
 export type ColumnFilters = Parameters<
   NonNullable<TableProps<ITenant>["onChange"]>
 >[1];
 
-// GET /api/tenants
-export interface ITenant {
-  jobId: string;
-  customerName: string;
-  status: TenantStatus;
-  createdAt: string;
-  liscencePackage: string;
-}
-
-export interface ITenantsResponse {
-  jobs: ITenant[];
-}
-
-// POST /api/tenants
+// POST /api/v1/tenants
 export interface ISsoConfig {
   metadataUrl: string;
   providerName: string;
@@ -42,6 +51,14 @@ export interface ITenantProps {
 }
 
 export interface ITenantsTableProps {
+  tenants: ITenant[];
+  isLoading: boolean;
+  isError: boolean;
+  onRetry: () => void;
+  page: number;
+  pageSize: number;
+  totalElements: number;
+  onPageChange: (page: number, pageSize: number) => void;
   onRowClick: (tenant: ITenant) => void;
 }
 

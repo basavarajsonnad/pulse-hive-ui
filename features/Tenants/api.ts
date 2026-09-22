@@ -3,6 +3,7 @@ import axiosBaseQuery from "@/axiosconfig/baseQuery";
 
 import type {
   ICreateTenantRequest,
+  ITenantsQuery,
   ITenantsResponse,
 } from "@/features/Tenants/types";
 import { GET, POST } from "@/utils/constants/apiConstants";
@@ -13,10 +14,11 @@ const tenantsApi = createApi({
   baseQuery: axiosBaseQuery(),
   tagTypes: ["tenantsApi"],
   endpoints: (builder) => ({
-    listTenants: builder.query<ITenantsResponse, void>({
-      query: () => ({
+    listTenants: builder.query<ITenantsResponse, ITenantsQuery>({
+      query: ({ page, size }) => ({
         url: TENANTS,
         method: GET,
+        data: { page, size },
         requiresAuth: false,
       }),
       providesTags: ["tenantsApi"],

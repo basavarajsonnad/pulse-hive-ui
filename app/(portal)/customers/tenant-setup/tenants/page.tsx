@@ -9,29 +9,44 @@ import TenantsTable from "@/features/Tenants/TenantsTable";
 import type { ITenant } from "@/features/Tenants/types";
 import { EMPTY_TENANTS, getTenantCounts } from "@/features/Tenants/utils";
 import { useListTenantsQuery } from "@/features/Tenants/api";
+import { DEFAULT_PAGE_SIZE } from "@/utils/constants/appConstants";
 import styles from "./page.module.scss";
 
 export default function TenantsPage() {
-  const { data } = useListTenantsQuery();
-  const { active, inProgress, failed } = getTenantCounts(
-    data?.jobs ?? EMPTY_TENANTS,
-  );
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
+
+  const { data, isLoading, isError, refetch } = useListTenantsQuery({
+    page: page - 1,
+    size: pageSize,
+  });
+
+  const tenants = data?.customers ?? EMPTY_TENANTS;
+  const { active, running, failed } = getTenantCounts(tenants);
+
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [selectedId, setSelectedId] = useState<string>();
+  const [selectedCustomerName, setSelectedCustomerName] = useState<string>();
 
-  const selectedTenant = data?.jobs.find((t) => t.jobId === selectedId);
+  const selectedTenant = tenants.find(
+    (t) => t.customerName === selectedCustomerName,
+  );
 
   const handleOnAdd = () => setDrawerOpen(true);
 
   const handleOnCloseDrawer = () => setDrawerOpen(false);
 
   const handleOnRowClick = (tenant: ITenant) => {
-    setSelectedId(tenant.jobId);
+    setSelectedCustomerName(tenant.customerName);
     setDetailsOpen(true);
   };
 
   const handleOnCloseDetails = () => setDetailsOpen(false);
+
+  const handleOnPageChange = (nextPage: number, nextPageSize: number) => {
+    setPage(nextPage);
+    setPageSize(nextPageSize);
+  };
 
   return (
     <>
@@ -39,8 +54,8 @@ export default function TenantsPage() {
         <div>
           <h1 className={styles.title}>Tenants</h1>
           <p className={styles.subtitle}>
-            All customer groups · {active} active · {inProgress} in progress ·{" "}
-            {failed} failed
+            {active} active · {running} in progress · {failed} failed on this
+            page
           </p>
         </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleOnAdd}>
@@ -48,7 +63,17 @@ export default function TenantsPage() {
         </Button>
       </div>
 
-      <TenantsTable onRowClick={handleOnRowClick} />
+      <TenantsTable
+        tenants={tenants}
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={refetch}
+        page={page}
+        pageSize={pageSize}
+        totalElements={data?.totalElements ?? 0}
+        onPageChange={handleOnPageChange}
+        onRowClick={handleOnRowClick}
+      />
 
       <Drawer
         open={drawerOpen}

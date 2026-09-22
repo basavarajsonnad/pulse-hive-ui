@@ -11,11 +11,14 @@ import styles from "./styles/TenantsTable.module.scss";
 
 const LOGIN_SUFFIX = ".portal26.ai";
 
-export const toTenantLogin = (customer: string) =>
+const toTenantLogin = (customer: string) =>
   `${customer
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "")}${LOGIN_SUFFIX}`;
+
+export const getTenantLogin = (tenant: ITenant) =>
+  tenant.tenantName ?? toTenantLogin(tenant.customerName);
 
 const TIER_CLASS: Record<string, string> = {
   basic: styles.tierBasic,
@@ -46,7 +49,7 @@ export function filterTenants(
   return tenants.filter((t) => {
     if (cutoff && t.createdAt < cutoff) return false;
     if (!query) return true;
-    return [t.customerName, toTenantLogin(t.customerName)].some((field) =>
+    return [t.customerName, getTenantLogin(t)].some((field) =>
       field.toLowerCase().includes(query),
     );
   });
@@ -57,7 +60,7 @@ export function getTenantCounts(tenants: ITenant[]) {
     tenants.filter((t) => t.status === status).length;
   return {
     active: count("active"),
-    inProgress: count("in_progress"),
+    running: count("in_progress"),
     failed: count("failed"),
   };
 }
@@ -142,7 +145,7 @@ export function downloadTenantsCsv(tenants: ITenant[], filename: string) {
   const rows = tenants.map((t) => [
     t.customerName,
     t.liscencePackage,
-    toTenantLogin(t.customerName),
+    getTenantLogin(t),
     t.status,
     t.createdAt,
   ]);
@@ -176,7 +179,7 @@ export const StatusPill = ({ tenant }: ITenantProps) => (
 );
 
 export const TenantLogin = ({ tenant }: ITenantProps) => {
-  const login = toTenantLogin(tenant.customerName);
+  const login = getTenantLogin(tenant);
 
   return tenant.status === "failed" ? (
     <span className={styles.loginDisabled} aria-disabled="true">
@@ -210,7 +213,7 @@ export function getTenantColumns(
     {
       key: "login",
       title: "Tenant / Login",
-      sorter: (a, b) => compareText(a.customerName, b.customerName),
+      sorter: (a, b) => compareText(getTenantLogin(a), getTenantLogin(b)),
       render: (_, tenant) => <TenantLogin tenant={tenant} />,
     },
     {

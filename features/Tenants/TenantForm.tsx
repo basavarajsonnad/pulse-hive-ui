@@ -33,7 +33,15 @@ export default function TenantForm({ onClose }: ITenantFormProps) {
 
       <Form<ICreateTenantRequest>
         layout="vertical"
-        requiredMark={false}
+        requiredMark={(label, { required }) =>
+          required ? (
+            <>
+              {label} <span className={styles.required}>*</span>
+            </>
+          ) : (
+            label
+          )
+        }
         onFinish={handleOnFinish}
         initialValues={TENANT_FORM_INITIAL_VALUES}
       >

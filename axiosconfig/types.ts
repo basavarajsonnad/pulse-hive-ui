@@ -15,6 +15,11 @@ export interface IApiResponse<T> {
   data: T;
 }
 
+export interface IApiErrorBody {
+  code: string;
+  message: string;
+}
+
 export interface IApiError {
   status?: number;
   data?: unknown;

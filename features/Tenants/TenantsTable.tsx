@@ -18,10 +18,8 @@ import {
   FullscreenOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import { useListTenantsQuery } from "@/features/Tenants/api";
 import type { ColumnFilters, ITenant, ITenantsTableProps } from "./types";
 import {
-  EMPTY_TENANTS,
   downloadTenantsCsv,
   filterTenants,
   getTenantColumns,
@@ -30,13 +28,19 @@ import {
 import { useDateRangeFilter } from "./useDateRangeFilter";
 import styles from "./styles/TenantsTable.module.scss";
 
-export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
+export default function TenantsTable({
+  tenants,
+  isLoading,
+  isError,
+  onRetry,
+  page,
+  pageSize,
+  totalElements,
+  onPageChange,
+  onRowClick,
+}: ITenantsTableProps) {
   const { dateRange } = useDateRangeFilter();
   const [search, setSearch] = useState("");
-
-  const { data, isLoading, isError, refetch } = useListTenantsQuery();
-
-  const allTenants = data?.jobs ?? EMPTY_TENANTS;
 
   const [columnFilters, setColumnFilters] = useState<ColumnFilters>({});
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
@@ -45,10 +49,10 @@ export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
 
   const tableData = useMemo(
     () =>
-      filterTenants(allTenants, search, dateRange).filter((t) =>
+      filterTenants(tenants, search, dateRange).filter((t) =>
         matchesColumnFilters(t, columnFilters),
       ),
-    [allTenants, search, dateRange, columnFilters],
+    [tenants, search, dateRange, columnFilters],
   );
 
   useEffect(() => {
@@ -67,8 +71,15 @@ export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
     else cardRef.current?.requestFullscreen();
   };
 
-  const handleOnTableChange: TableProps<ITenant>["onChange"] = (_, filters) =>
+  const handleOnTableChange: TableProps<ITenant>["onChange"] = (
+    pagination,
+    filters,
+  ) => {
     setColumnFilters(filters);
+    if (pagination.current && pagination.pageSize) {
+      onPageChange(pagination.current, pagination.pageSize);
+    }
+  };
 
   const handleOnDownload = () => downloadTenantsCsv(tableData, "tenants.csv");
 
@@ -99,7 +110,7 @@ export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
       <div className={styles.toolbar}>
         <h2 className={styles.title}>Customers — All customer groups</h2>
         <span className={styles.count}>
-          {tableData.length} of {allTenants.length}
+          {tableData.length} of {totalElements}
         </span>
         <Input
           size="small"
@@ -158,7 +169,7 @@ export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
           showIcon
           title="Couldn't load tenants"
           action={
-            <Button size="small" onClick={refetch}>
+            <Button size="small" onClick={onRetry}>
               Retry
             </Button>
           }
@@ -169,7 +180,7 @@ export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
       <ConfigProvider getPopupContainer={getPopupContainer}>
         <Table<ITenant>
           size="small"
-          rowKey="jobId"
+          rowKey="customerName"
           columns={visibleColumns}
           dataSource={tableData}
           loading={isLoading}
@@ -178,7 +189,9 @@ export default function TenantsTable({ onRowClick }: ITenantsTableProps) {
           scroll={{ x: "max-content" }}
           pagination={{
             placement: ["bottomStart"],
-            defaultPageSize: 10,
+            current: page,
+            pageSize,
+            total: totalElements,
             pageSizeOptions: [10, 20, 50, 100],
             showSizeChanger: true,
             showQuickJumper: true,
