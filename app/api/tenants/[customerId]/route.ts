@@ -7,10 +7,13 @@ function errorResponse(status: number, code: ApiError["code"], message: string) 
   return NextResponse.json(body, { status });
 }
 
-export async function GET(request: Request) {
+export async function GET(
+  _request: Request,
+  context: { params: Promise<{ customerId: string }> },
+) {
   try {
-    const customerName = new URL(request.url).searchParams.get("customerName") ?? "";
-    const signin = await getSigninRegistration(customerName);
+    const { customerId } = await context.params;
+    const signin = await getSigninRegistration(customerId);
     return NextResponse.json(signin, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {

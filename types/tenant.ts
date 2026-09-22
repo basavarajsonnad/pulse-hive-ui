@@ -31,6 +31,8 @@ export type CreateTenantResponse = {
 };
 
 export type CustomerListItem = {
+  customerId: string;
+  mspId: string;
   customerName: string;
   tenantName: string | null;
   licensePackage: "basic" | "intermediate" | "advanced";
