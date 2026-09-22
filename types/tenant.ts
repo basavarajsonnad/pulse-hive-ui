@@ -50,6 +50,14 @@ export type CustomerListResponse = {
 };
 
 export type SigninRegistrationResponse = {
+  customerId: string;
+  mspId: string;
+  customerName: string;
+  tenantName: string | null;
+  licensePackage: "basic" | "intermediate" | "advanced";
+  status: CustomerStatus;
+  createdAt: string;
+  updatedAt: string;
   registrationOutput: string | null;
 };
 
