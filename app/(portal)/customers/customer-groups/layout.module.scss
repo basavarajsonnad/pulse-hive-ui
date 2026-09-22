@@ -1,0 +1,7 @@
+@use "@/styles/variables" as vars;
+
+.content {
+  flex: 1;
+  padding: 16px 32px 24px 27px;
+  background: vars.$color-page-bg;
+}

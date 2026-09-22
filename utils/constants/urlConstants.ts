@@ -3,3 +3,5 @@ export const LOGIN_API = {
 } as const;
 
 export const TENANTS = "/api/v1/tenants";
+
+export const CUSTOMER_GROUPS = "/api/v1/customer-groups";

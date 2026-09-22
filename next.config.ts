@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const TENANTS_PATH = "/customers/tenant-setup/tenants";
+const CUSTOMER_GROUPS_PATH = "/customers/customer-groups/group-management";
 
 const nextConfig: NextConfig = {
   async redirects() {
@@ -12,9 +13,14 @@ const nextConfig: NextConfig = {
         destination: TENANTS_PATH,
         permanent: false,
       },
+      {
+        source: "/customers/customer-groups",
+        destination: CUSTOMER_GROUPS_PATH,
+        permanent: false,
+      },
     ];
   },
-  // Proxy /api/* to the backend so the browser stays same-origin (no CORS).
+
   async rewrites() {
     const { BASE_URL } = process.env;
     return BASE_URL

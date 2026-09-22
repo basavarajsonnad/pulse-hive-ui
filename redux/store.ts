@@ -3,11 +3,15 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 
 import rootReducer from "@/redux/rootReducer";
 import tenantsApi from "@/features/Tenants/api";
+import customerGroupsApi from "@/features/CustomerGroups/api";
 
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat([tenantsApi.middleware]),
+    getDefaultMiddleware().concat([
+      tenantsApi.middleware,
+      customerGroupsApi.middleware,
+    ]),
   devTools: true,
 });
 
