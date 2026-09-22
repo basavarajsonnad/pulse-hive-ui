@@ -14,25 +14,27 @@ export type CreateTenantRequest = {
 };
 
 /** Hive DB / V1 CHECK values. UI mapping from in_progress comes later. */
-export type ProvisioningStatus =
+export type JobProvisioningStatus =
   | "queued"
   | "running"
   | "completed"
   | "completed_with_errors"
   | "failed";
 
+export type CustomerStatus = "in_progress" | "completed" | "failed";
+
 export type CreateTenantResponse = {
   jobId: string;
   customerName: string;
   licensePackage: "basic" | "intermediate" | "advanced";
-  status: ProvisioningStatus;
+  status: JobProvisioningStatus;
 };
 
 export type CustomerListItem = {
   customerName: string;
   tenantName: string | null;
   licensePackage: "basic" | "intermediate" | "advanced";
-  status: ProvisioningStatus;
+  status: CustomerStatus;
   createdAt: string;
   updatedAt: string;
 };
