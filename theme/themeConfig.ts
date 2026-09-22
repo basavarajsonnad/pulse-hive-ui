@@ -4,13 +4,27 @@ import type { ThemeConfig } from "antd";
 // Prefer tokens here over SCSS overrides for anything AntD exposes.
 const themeConfig: ThemeConfig = {
   token: {
-    colorPrimary: "#1677ff",
+    colorPrimary: "#7c3aed",
+    colorText: "#1f2033",
+    colorTextSecondary: "#8b8fa3",
+    colorBorder: "#e3e4ec",
+    colorBorderSecondary: "#eeeff5",
     borderRadius: 6,
+    fontSize: 13,
     fontFamily: "var(--font-geist-sans), Arial, sans-serif",
   },
   components: {
-    Button: {
-      controlHeight: 40,
+    Table: {
+      headerBg: "#ffffff",
+      headerColor: "#8b8fa3",
+      headerSplitColor: "transparent",
+      rowHoverBg: "#f1f4ff",
+      cellPaddingBlockSM: 10,
+      cellPaddingInlineSM: 14,
+    },
+    Tabs: {
+      horizontalMargin: "0",
+      titleFontSize: 13,
     },
   },
 };
