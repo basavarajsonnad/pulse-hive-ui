@@ -2,7 +2,7 @@
 
 import { Badge, Button } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
-import { useDateRangeFilter } from "@/features/Tenants/useDateRangeFilter";
+import { useDateRangeFilter } from "@/shared/hooks/useDateRangeFilter";
 import TabNav, { type ITabNavItem } from "./TabNav";
 import styles from "./styles/CustomersTopBar.module.scss";
 

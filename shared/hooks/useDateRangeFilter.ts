@@ -1,11 +1,10 @@
 import { useSearchParams } from "next/navigation";
-import type { DateRange } from "./types";
 
 const RANGE_PARAM = "range";
 const ALL_TIME = "all";
 
-// The date-range chip is shared by three layout components, so it lives in the
-// URL (?range=all clears the default "Last 30 days").
+export type DateRange = "30d" | null;
+
 export function useDateRangeFilter() {
   const searchParams = useSearchParams();
   const dateRange: DateRange =

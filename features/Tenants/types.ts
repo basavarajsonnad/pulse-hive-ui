@@ -1,6 +1,13 @@
 import type { TableProps } from "antd";
 
+export type { DateRange } from "@/shared/hooks/useDateRangeFilter";
+
 export const TENANT_TIERS = ["Basic", "Intermediate", "Advanced"] as const;
+
+export const TENANT_TIER_OPTIONS = TENANT_TIERS.map((tier) => ({
+  value: tier.toLowerCase(),
+  label: tier,
+}));
 
 export type TenantStatus = "in_progress" | "active" | "failed";
 
@@ -25,8 +32,6 @@ export interface ITenantsQuery {
   page: number;
   size: number;
 }
-
-export type DateRange = "30d" | null;
 
 export type ColumnFilters = Parameters<
   NonNullable<TableProps<ITenant>["onChange"]>
