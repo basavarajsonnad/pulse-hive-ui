@@ -14,11 +14,7 @@ export type CreateTenantRequest = {
 
 /** Hive DB / V1 CHECK values. UI mapping from in_progress comes later. */
 export type ProvisioningStatus =
-  | "queued"
-  | "running"
-  | "completed"
-  | "completed_with_errors"
-  | "failed";
+  "queued" | "running" | "completed" | "completed_with_errors" | "failed";
 
 export type CreateTenantResponse = {
   jobId: string;
@@ -27,8 +23,11 @@ export type CreateTenantResponse = {
 };
 
 export type CustomerListItem = {
+  customerId: string;
+  mspId: string;
   customerName: string;
   tenantName: string | null;
+  licensePackage: string;
   status: ProvisioningStatus;
   createdAt: string;
   updatedAt: string;
@@ -40,6 +39,20 @@ export type CustomerListResponse = {
   size: number;
   totalElements: number;
   totalPages: number;
+};
+
+/** GET /api/v1/tenants/{customerId} */
+export type CustomerDetails = {
+  customerId: string;
+  mspId: string;
+  customerName: string;
+  tenantName: string | null;
+  licensePackage: string;
+  status: ProvisioningStatus;
+  createdAt: string;
+  updatedAt: string;
+  /** MANUAL STEP instructions when SSO registration needs attention; null otherwise. */
+  registrationOutput: string | null;
 };
 
 export type ApiError = {

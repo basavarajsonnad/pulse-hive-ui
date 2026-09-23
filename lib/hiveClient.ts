@@ -26,11 +26,14 @@ function hiveBaseUrl(): string {
 }
 
 function hiveError(status: number, body: unknown): HiveClientError {
-  const record = body && typeof body === "object" ? (body as Record<string, unknown>) : null;
+  const record =
+    body && typeof body === "object" ? (body as Record<string, unknown>) : null;
   const message =
-    typeof record?.message === "string" ? record.message : "Unable to complete request";
-  // Preserve auth failures so the UI can send the user back to login.
-  const httpStatus = status === 401 || status === 403 || status === 404 ? status : 400;
+    typeof record?.message === "string"
+      ? record.message
+      : "Unable to complete request";
+  const httpStatus =
+    status === 401 || status === 403 || status === 404 ? status : 400;
 
   return new HiveClientError(httpStatus, VALIDATION_FAILED, message);
 }
@@ -48,14 +51,20 @@ async function parseJson(response: Response): Promise<unknown> {
   }
 }
 
-type HiveFetchOptions = RequestInit & {
+type HiveRequestOptions = {
   /** Browser Cookie header from the Next.js route (forwards HIVE_SESSION to Hive). */
-  cookie?: string | null;
+  cookie?: string;
 };
 
-async function hiveFetch(path: string, init: HiveFetchOptions = {}): Promise<unknown> {
-  const { cookie, headers: initHeaders, ...rest } = init;
-  const headers = new Headers(initHeaders);
+const HIVE_FETCH_TIMEOUT_MS = 15_000;
+
+async function hiveFetch(
+  path: string,
+  init?: RequestInit,
+  options?: HiveRequestOptions,
+): Promise<unknown> {
+  const headers = new Headers(init?.headers);
+  const cookie = options?.cookie?.trim();
 
   if (cookie) {
     headers.set("Cookie", cookie);
@@ -65,9 +74,10 @@ async function hiveFetch(path: string, init: HiveFetchOptions = {}): Promise<unk
 
   try {
     response = await fetch(`${hiveBaseUrl()}${path}`, {
-      ...rest,
+      ...init,
       headers,
       cache: "no-store",
+      signal: init?.signal ?? AbortSignal.timeout(HIVE_FETCH_TIMEOUT_MS),
     });
   } catch {
     throw new HiveClientError(400, VALIDATION_FAILED, "Unable to reach Hive");
@@ -84,32 +94,53 @@ async function hiveFetch(path: string, init: HiveFetchOptions = {}): Promise<unk
 
 export async function createTenant(
   rawBody: string,
-  cookie?: string | null,
+  options?: HiveRequestOptions,
 ): Promise<unknown> {
   let body = rawBody;
   try {
     const parsed = JSON.parse(rawBody) as Record<string, unknown>;
-    // Hive CreateTenantRequest only accepts customerName + sso.
-    const { customerName, sso } = parsed;
-    body = JSON.stringify({ customerName, sso });
+    const licensePackage = parsed.licensePackage ?? parsed.liscencePackage;
+    body = JSON.stringify({
+      customerName: parsed.customerName,
+      licensePackage,
+      sso: parsed.sso,
+    });
   } catch {
-    // leave rawBody; Hive will validate
+    console.warn("createTenant: unable to parse request body", rawBody);
   }
 
-  return hiveFetch("/api/v1/tenants", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body,
-    cookie,
-  });
+  return hiveFetch(
+    "/api/v1/tenants",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    },
+    options,
+  );
 }
 
 type HiveCustomer = {
+  customerId?: string;
+  mspId?: string;
   customerName?: string;
   tenantName?: string | null;
+  licensePackage?: string;
   status?: string;
   createdAt?: string;
   updatedAt?: string;
+};
+
+type HiveCustomerDetails = {
+  customerId?: string;
+  mspId?: string;
+  customerName?: string;
+  tenantName?: string | null;
+  licensePackage?: string;
+  status?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  registrationOutput?: string | null;
 };
 
 type HiveCustomerList = {
@@ -141,13 +172,13 @@ function toUiTenantsResponse(body: unknown) {
 
   return {
     customers: customers.map((c) => ({
+      customerId: c.customerId || "",
       customerName: c.customerName || "",
       tenantName: c.tenantName ?? null,
       status: mapHiveStatus(c.status),
       createdAt: c.createdAt || "",
       updatedAt: c.updatedAt || "",
-      // Not returned by Hive yet; UI still expects a tier label.
-      liscencePackage: "basic",
+      liscencePackage: c.licensePackage || "basic",
     })),
     page: list.page ?? 0,
     size: list.size ?? customers.length,
@@ -158,14 +189,42 @@ function toUiTenantsResponse(body: unknown) {
 
 export async function listTenants(
   search = "",
-  cookie?: string | null,
+  options?: HiveRequestOptions,
 ): Promise<unknown> {
   const query = search.startsWith("?") ? search : search ? `?${search}` : "";
-  const body = await hiveFetch(`/api/v1/tenants${query}`, {
-    method: "GET",
-    cookie,
-  });
+  const body = await hiveFetch(
+    `/api/v1/tenants${query}`,
+    { method: "GET" },
+    options,
+  );
   return toUiTenantsResponse(body);
 }
 
+/** Adapt Hive GET /api/v1/tenants/{customerId} into the UI ITenantDetails shape. */
+function toUiTenantDetails(body: unknown) {
+  const details = (body ?? {}) as HiveCustomerDetails;
 
+  return {
+    customerId: details.customerId || "",
+    mspId: details.mspId || "",
+    customerName: details.customerName || "",
+    tenantName: details.tenantName ?? null,
+    liscencePackage: details.licensePackage || "basic",
+    status: mapHiveStatus(details.status),
+    createdAt: details.createdAt || "",
+    updatedAt: details.updatedAt || "",
+    registrationOutput: details.registrationOutput ?? null,
+  };
+}
+
+export async function getTenantDetails(
+  customerId: string,
+  options?: HiveRequestOptions,
+): Promise<unknown> {
+  const body = await hiveFetch(
+    `/api/v1/tenants/${encodeURIComponent(customerId)}`,
+    { method: "GET" },
+    options,
+  );
+  return toUiTenantDetails(body);
+}

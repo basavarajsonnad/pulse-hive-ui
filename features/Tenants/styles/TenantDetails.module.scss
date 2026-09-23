@@ -11,6 +11,18 @@
   margin-left: auto;
 }
 
+.registrationAlert {
+  margin-bottom: vars.$spacing-md;
+}
+
+.registrationText {
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 12px;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
 .heading {
   margin-top: 4px;
   padding-bottom: 8px;

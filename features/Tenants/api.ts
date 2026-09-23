@@ -3,6 +3,7 @@ import axiosBaseQuery from "@/axiosconfig/baseQuery";
 
 import type {
   ICreateTenantRequest,
+  ITenantDetails,
   ITenantsQuery,
   ITenantsResponse,
 } from "@/features/Tenants/types";
@@ -32,10 +33,22 @@ const tenantsApi = createApi({
       }),
       invalidatesTags: ["tenantsApi"],
     }),
+    getTenantDetails: builder.query<ITenantDetails, string>({
+      query: (customerId) => ({
+        url: `${TENANTS}/${customerId}`,
+        method: GET,
+        requiresAuth: false,
+      }),
+      providesTags: ["tenantsApi"],
+    }),
   }),
   refetchOnFocus: true,
 });
 
-export const { useListTenantsQuery, useAddTenantMutation } = tenantsApi;
+export const {
+  useListTenantsQuery,
+  useAddTenantMutation,
+  useGetTenantDetailsQuery,
+} = tenantsApi;
 
 export default tenantsApi;
