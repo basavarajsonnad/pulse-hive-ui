@@ -9,27 +9,37 @@ export type SsoConfig = {
 
 export type CreateTenantRequest = {
   customerName: string;
+  licensePackage: "basic" | "intermediate" | "advanced";
   sso: SsoConfig;
 };
 
-/** Hive DB / V1 CHECK values. UI mapping from in_progress comes later. */
-export type ProvisioningStatus =
+/** Hive job CHECK values. */
+export type JobProvisioningStatus =
   | "queued"
   | "running"
   | "completed"
   | "completed_with_errors"
   | "failed";
 
+/** Alias used by main-branch UI types. */
+export type ProvisioningStatus = JobProvisioningStatus;
+
+export type CustomerStatus = "in_progress" | "completed" | "failed";
+
 export type CreateTenantResponse = {
   jobId: string;
   customerName: string;
-  status: ProvisioningStatus;
+  licensePackage: "basic" | "intermediate" | "advanced";
+  status: JobProvisioningStatus;
 };
 
 export type CustomerListItem = {
+  customerId: string;
+  mspId: string;
   customerName: string;
   tenantName: string | null;
-  status: ProvisioningStatus;
+  licensePackage: "basic" | "intermediate" | "advanced";
+  status: CustomerStatus;
   createdAt: string;
   updatedAt: string;
 };
@@ -40,6 +50,18 @@ export type CustomerListResponse = {
   size: number;
   totalElements: number;
   totalPages: number;
+};
+
+export type SigninRegistrationResponse = {
+  customerId: string;
+  mspId: string;
+  customerName: string;
+  tenantName: string | null;
+  licensePackage: "basic" | "intermediate" | "advanced";
+  status: CustomerStatus;
+  createdAt: string;
+  updatedAt: string;
+  registrationOutput: string | null;
 };
 
 export type ApiError = {

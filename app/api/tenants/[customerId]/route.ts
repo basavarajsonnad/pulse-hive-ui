@@ -8,12 +8,15 @@ function errorResponse(status: number, code: ApiError["code"], message: string) 
 }
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ customerId: string }> },
 ) {
   try {
     const { customerId } = await context.params;
-    const signin = await getSigninRegistration(customerId);
+    const signin = await getSigninRegistration(
+      customerId,
+      request.headers.get("cookie"),
+    );
     return NextResponse.json(signin, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {

@@ -10,7 +10,7 @@ function errorResponse(status: number, code: ApiError["code"], message: string) 
 export async function GET(request: Request) {
   try {
     const search = new URL(request.url).search;
-    const customers = await listTenants(search);
+    const customers = await listTenants(search, request.headers.get("cookie"));
     return NextResponse.json(customers, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {
