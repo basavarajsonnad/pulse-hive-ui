@@ -15,13 +15,11 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ customerId: string }> },
 ) {
+  const cookie = request.headers.get("cookie") ?? "";
   const { customerId } = await params;
 
   try {
-    const details = await getTenantDetails(
-      customerId,
-      request.headers.get("cookie"),
-    );
+    const details = await getTenantDetails(customerId, { cookie });
     return NextResponse.json(details, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {
