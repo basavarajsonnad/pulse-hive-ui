@@ -1,9 +1,3 @@
-// Adapters that translate the raw Hive backend shapes into the UI shapes the
-// app consumes. This logic previously lived in the server-side BFF
-// (lib/hiveClient.ts). With the static export there is no server, so the
-// browser calls Hive directly and applies these transforms via RTK Query's
-// `transformResponse` / request builders.
-
 import type {
   ICreateTenantRequest,
   ITenantDetails,

@@ -1,7 +1,3 @@
-// Static export has no server-side proxy, so the browser talks to the Hive
-// backend directly. The base URL must be inlined at build time, hence the
-// NEXT_PUBLIC_ prefix. (Previously the same-origin /api BFF used server-only
-// BASE_URL / HIVE_API_BASE_URL.)
 export const API_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "";
 export const API_VERSION = process.env.NEXT_PUBLIC_API_VERSION ?? "";
 
