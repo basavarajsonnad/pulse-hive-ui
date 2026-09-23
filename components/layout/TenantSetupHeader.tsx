@@ -1,7 +1,7 @@
 "use client";
 
 import { Tag } from "antd";
-import { useDateRangeFilter } from "@/features/Tenants/useDateRangeFilter";
+import { useDateRangeFilter } from "@/shared/hooks/useDateRangeFilter";
 import TabNav, { type ITabNavItem } from "./TabNav";
 import styles from "./styles/TenantSetupHeader.module.scss";
 

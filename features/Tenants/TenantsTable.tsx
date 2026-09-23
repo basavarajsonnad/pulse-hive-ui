@@ -25,7 +25,7 @@ import {
   getTenantColumns,
   matchesColumnFilters,
 } from "./utils";
-import { useDateRangeFilter } from "./useDateRangeFilter";
+import { useDateRangeFilter } from "@/shared/hooks/useDateRangeFilter";
 import styles from "./styles/TenantsTable.module.scss";
 
 export default function TenantsTable({

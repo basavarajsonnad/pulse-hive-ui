@@ -48,11 +48,13 @@ components/
   layout/             App shell only: Sidebar, TabNav, top bar, filter bar
 features/
   Tenants/            Everything for tenants in one place: api.ts (GET/POST /api/tenants),
-                      useDateRangeFilter.ts (date-range chip, kept in the URL), types.ts,
-                      utils.tsx (API -> table mapping, columns), TenantsTable / TenantForm, styles/
+                      types.ts, utils.tsx (API -> table mapping, columns),
+                      TenantsTable / TenantForm, styles/
   Login/              slice.ts: authToken + user details (used by axios baseQuery)
 shared/
   Notification/       Success/error toasts driven by redux (setNotification)
+  hooks/
+    useDateRangeFilter.ts   Date-range chip (kept in the URL), shared by layout + Tenants
 axiosconfig/          axiosInstance, baseQuery (auth + refresh), interceptor
 redux/
   store.ts            Singleton store + RootState / AppDispatch types

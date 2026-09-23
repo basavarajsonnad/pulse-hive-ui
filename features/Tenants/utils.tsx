@@ -1,5 +1,5 @@
 import { Tag, type TableColumnsType } from "antd";
-import { TENANT_TIERS } from "./types";
+import { TENANT_TIER_OPTIONS } from "./types";
 import type {
   ColumnFilters,
   DateRange,
@@ -83,10 +83,9 @@ const STATUS_CLASS: Record<TenantStatus, string> = {
   failed: styles.statusFailed,
 };
 
-export const TIER_FILTER_OPTIONS = TENANT_TIERS.map((tier) => ({
-  text: tier,
-  value: tier.toLowerCase(),
-}));
+export const TIER_FILTER_OPTIONS = TENANT_TIER_OPTIONS.map(
+  ({ value, label }) => ({ value, text: label }),
+);
 
 const CREATED_BUCKETS: Record<string, (daysAgo: number) => boolean> = {
   "7d": (d) => d <= 7,

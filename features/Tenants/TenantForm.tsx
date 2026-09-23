@@ -4,18 +4,13 @@ import { Button, Form, Input, Select } from "antd";
 import { useAddTenantMutation } from "@/features/Tenants/api";
 import { TENANT_FORM_INITIAL_VALUES } from "@/utils/constants/appConstants";
 import {
-  TENANT_TIERS,
+  TENANT_TIER_OPTIONS,
   type ICreateTenantRequest,
   type ITenantFormProps,
 } from "./types";
 import styles from "./styles/TenantForm.module.scss";
 
 const CUSTOMER_NAME_PATTERN = /^[a-zA-Z0-9-]{3,25}$/;
-
-const TIER_OPTIONS = TENANT_TIERS.map((tier) => ({
-  value: tier.toLowerCase(),
-  label: tier,
-}));
 
 export default function TenantForm({ onClose }: ITenantFormProps) {
   const [addTenant, { isLoading }] = useAddTenantMutation();
@@ -64,7 +59,7 @@ export default function TenantForm({ onClose }: ITenantFormProps) {
           label="License package"
           extra="Basic: Discovery, Visibility & Risk · Intermediate: + Preventive Controls · Advanced: all capabilities"
         >
-          <Select options={TIER_OPTIONS} />
+          <Select options={TENANT_TIER_OPTIONS} />
         </Form.Item>
 
         <Form.Item
