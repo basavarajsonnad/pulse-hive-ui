@@ -26,18 +26,14 @@ export default function TenantsPage() {
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
-  const [selectedCustomerName, setSelectedCustomerName] = useState<string>();
-
-  const selectedTenant = tenants.find(
-    (t) => t.customerName === selectedCustomerName,
-  );
+  const [selectedTenant, setSelectedTenant] = useState<ITenant>();
 
   const handleOnAdd = () => setDrawerOpen(true);
 
   const handleOnCloseDrawer = () => setDrawerOpen(false);
 
   const handleOnRowClick = (tenant: ITenant) => {
-    setSelectedCustomerName(tenant.customerName);
+    setSelectedTenant(tenant);
     setDetailsOpen(true);
   };
 
@@ -94,7 +90,9 @@ export default function TenantsPage() {
         closable={{ placement: "end" }}
         destroyOnHidden
       >
-        {selectedTenant && <TenantDetails tenant={selectedTenant} />}
+        {selectedTenant && (
+          <TenantDetails customerId={selectedTenant.customerId} />
+        )}
       </Drawer>
     </>
   );

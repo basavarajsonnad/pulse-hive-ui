@@ -12,12 +12,19 @@ export const TENANT_TIER_OPTIONS = TENANT_TIERS.map((tier) => ({
 export type TenantStatus = "in_progress" | "active" | "failed";
 
 export interface ITenant {
+  customerId: string;
   customerName: string;
   tenantName: string | null;
   liscencePackage: string;
   status: TenantStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+// GET /api/v1/tenants/{customerId}
+export interface ITenantDetails extends ITenant {
+  mspId: string;
+  registrationOutput: string | null;
 }
 
 export interface ITenantsResponse {
@@ -53,6 +60,10 @@ export interface ICreateTenantRequest {
 
 export interface ITenantProps {
   tenant: ITenant;
+}
+
+export interface ITenantDetailsProps {
+  customerId: string;
 }
 
 export interface ITenantsTableProps {

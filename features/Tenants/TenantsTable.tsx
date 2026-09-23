@@ -180,7 +180,7 @@ export default function TenantsTable({
       <ConfigProvider getPopupContainer={getPopupContainer}>
         <Table<ITenant>
           size="small"
-          rowKey="customerName"
+          rowKey="customerId"
           columns={visibleColumns}
           dataSource={tableData}
           loading={isLoading}

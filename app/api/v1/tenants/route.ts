@@ -2,7 +2,11 @@ import { NextResponse } from "next/server";
 import { createTenant, HiveClientError, listTenants } from "@/lib/hiveClient";
 import { VALIDATION_FAILED, type ApiError } from "@/types/tenant";
 
-function errorResponse(status: number, code: ApiError["code"], message: string) {
+function errorResponse(
+  status: number,
+  code: ApiError["code"],
+  message: string,
+) {
   const body: ApiError = { code, message };
   return NextResponse.json(body, { status });
 }
