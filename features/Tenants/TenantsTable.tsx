@@ -26,6 +26,7 @@ import {
   matchesColumnFilters,
 } from "./utils";
 import { useDateRangeFilter } from "@/shared/hooks/useDateRangeFilter";
+import translator from "@/i18n/translator";
 import styles from "./styles/TenantsTable.module.scss";
 
 export default function TenantsTable({
@@ -108,23 +109,26 @@ export default function TenantsTable({
   return (
     <div ref={cardRef} className={styles.card}>
       <div className={styles.toolbar}>
-        <h2 className={styles.title}>Customers — All customer groups</h2>
+        <h2 className={styles.title}>{translator("tenants.table.title")}</h2>
         <span className={styles.count}>
-          {tableData.length} of {totalElements}
+          {translator("common.countOf", {
+            count: tableData.length,
+            total: totalElements,
+          })}
         </span>
         <Input
           size="small"
           allowClear
           className={styles.search}
-          placeholder="Search..."
-          aria-label="Search customers"
+          placeholder={translator("common.search")}
+          aria-label={translator("tenants.table.searchAriaLabel")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <Popover
           trigger="click"
           placement="bottomRight"
-          title="Columns"
+          title={translator("common.columns")}
           getPopupContainer={getPopupContainer}
           content={
             <Checkbox.Group
@@ -140,24 +144,30 @@ export default function TenantsTable({
           <Button
             size="small"
             icon={<TableOutlined />}
-            aria-label="Choose columns"
+            aria-label={translator("common.chooseColumns")}
           />
         </Popover>
-        <Tooltip title="Download CSV">
+        <Tooltip title={translator("common.downloadCsv")}>
           <Button
             size="small"
             icon={<DownloadOutlined />}
-            aria-label="Download CSV"
+            aria-label={translator("common.downloadCsv")}
             onClick={handleOnDownload}
           />
         </Tooltip>
-        <Tooltip title={fullscreen ? "Exit full screen" : "Full screen"}>
+        <Tooltip
+          title={
+            fullscreen
+              ? translator("common.exitFullScreen")
+              : translator("common.fullScreen")
+          }
+        >
           <Button
             size="small"
             icon={
               fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />
             }
-            aria-label="Toggle full screen"
+            aria-label={translator("common.toggleFullScreen")}
             onClick={handleOnToggleFullscreen}
           />
         </Tooltip>
@@ -167,10 +177,10 @@ export default function TenantsTable({
         <Alert
           type="error"
           showIcon
-          title="Couldn't load tenants"
+          title={translator("tenants.table.loadError")}
           action={
             <Button size="small" onClick={onRetry}>
-              Retry
+              {translator("common.retry")}
             </Button>
           }
         />
@@ -195,7 +205,8 @@ export default function TenantsTable({
             pageSizeOptions: [10, 20, 50, 100],
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, [from, to]) => `${from}–${to} of ${total}`,
+            showTotal: (total, [from, to]) =>
+              translator("common.pageRange", { from, to, total }),
             size: "small",
           }}
         />

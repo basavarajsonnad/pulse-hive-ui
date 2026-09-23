@@ -3,6 +3,7 @@ import {
   TIER_FILTER_OPTIONS,
 } from "@/features/Tenants/utils";
 import { CUSTOMER_GROUPS_MOCK } from "@/features/CustomerGroups/utils";
+import translator from "@/i18n/translator";
 import type { FilterSectionKey, IFilterOption, SelectedFilters } from "./types";
 
 export const EMPTY_SELECTED_FILTERS: SelectedFilters = {
@@ -13,11 +14,11 @@ export const EMPTY_SELECTED_FILTERS: SelectedFilters = {
 };
 
 const DATE_RANGE_OPTIONS: IFilterOption[] = [
-  { label: "Last 24 hours", value: "24h" },
-  { label: "Last 7 days", value: "7d" },
-  { label: "Last 30 days", value: "30d" },
-  { label: "Last quarter", value: "quarter" },
-  { label: "Custom", value: "custom" },
+  { label: translator("common.dateRanges.last24Hours"), value: "24h" },
+  { label: translator("common.dateRanges.last7Days"), value: "7d" },
+  { label: translator("common.dateRanges.last30Days"), value: "30d" },
+  { label: translator("common.dateRanges.lastQuarter"), value: "quarter" },
+  { label: translator("common.dateRanges.custom"), value: "custom" },
 ];
 
 const CUSTOMER_GROUP_OPTIONS: IFilterOption[] = CUSTOMER_GROUPS_MOCK.map(
@@ -37,20 +38,24 @@ export const FILTER_SECTIONS: {
   title: string;
   options: IFilterOption[];
 }[] = [
-  { key: "dateRange", title: "Date Range", options: DATE_RANGE_OPTIONS },
+  {
+    key: "dateRange",
+    title: translator("filtersDrawer.sections.dateRange"),
+    options: DATE_RANGE_OPTIONS,
+  },
   {
     key: "customerGroup",
-    title: "Customer Group",
+    title: translator("filtersDrawer.sections.customerGroup"),
     options: CUSTOMER_GROUP_OPTIONS,
   },
   {
     key: "licensePackage",
-    title: "License Package",
+    title: translator("filtersDrawer.sections.licensePackage"),
     options: LICENSE_PACKAGE_OPTIONS,
   },
   {
     key: "tenantStatus",
-    title: "Tenant Status",
+    title: translator("filtersDrawer.sections.tenantStatus"),
     options: TENANT_STATUS_OPTIONS,
   },
 ];

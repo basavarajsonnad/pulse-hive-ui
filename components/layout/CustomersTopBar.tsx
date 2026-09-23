@@ -5,19 +5,20 @@ import { Badge, Button } from "antd";
 import { FilterOutlined } from "@ant-design/icons";
 import { useDateRangeFilter } from "@/shared/hooks/useDateRangeFilter";
 import FiltersDrawer from "@/shared/FiltersDrawer";
+import translator from "@/i18n/translator";
 import TabNav, { type ITabNavItem } from "./TabNav";
 import styles from "./styles/CustomersTopBar.module.scss";
 
 const CUSTOMER_TABS: ITabNavItem[] = [
   {
     key: "tenant-setup",
-    label: "Tenant Setup",
+    label: translator("layout.topBar.tabs.tenantSetup"),
     href: "/customers/tenant-setup/tenants",
     match: "/customers/tenant-setup",
   },
   {
     key: "customer-groups",
-    label: "Customer Groups",
+    label: translator("layout.topBar.tabs.customerGroups"),
     href: "/customers/customer-groups/group-management",
     match: "/customers/customer-groups",
   },
@@ -33,14 +34,16 @@ export default function CustomersTopBar() {
 
   return (
     <header className={styles.bar}>
-      <span className={styles.section}>CUSTOMERS</span>
+      <span className={styles.section}>
+        {translator("layout.topBar.section")}
+      </span>
       <div className={styles.tabs}>
         <TabNav items={CUSTOMER_TABS} />
       </div>
       <Badge count={activeFilterCount} size="small">
         <Button
           icon={<FilterOutlined />}
-          aria-label="Filters"
+          aria-label={translator("layout.topBar.filtersAriaLabel")}
           onClick={handleOnOpenFilters}
         />
       </Badge>

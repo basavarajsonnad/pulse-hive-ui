@@ -1,5 +1,6 @@
 import { Tag, type TableColumnsType } from "antd";
 import type { ICustomerGroup } from "./types";
+import translator from "@/i18n/translator";
 import styles from "./styles/CustomerGroupsTable.module.scss";
 
 const compareText = (a: string, b: string) => a.localeCompare(b);
@@ -148,11 +149,11 @@ export function downloadCustomerGroupsCsv(
   filename: string,
 ) {
   const header = [
-    "Customer Group",
-    "Customers",
-    "Basic",
-    "Intermediate",
-    "Advanced",
+    translator("customerGroups.csv.customerGroup"),
+    translator("customerGroups.csv.customers"),
+    translator("customerGroups.csv.basic"),
+    translator("customerGroups.csv.intermediate"),
+    translator("customerGroups.csv.advanced"),
   ];
   const rows = customerGroups.map((g) => [
     g.customerGroup,
@@ -200,7 +201,7 @@ export function getCustomerGroupColumns(): TableColumnsType<ICustomerGroup> {
   return [
     {
       key: "customerGroup",
-      title: "Customer group",
+      title: translator("customerGroups.columns.customerGroup"),
       sorter: (a, b) => compareText(a.customerGroup, b.customerGroup),
       render: (_, group) => (
         <span className={styles.groupName}>{group.customerGroup}</span>
@@ -208,12 +209,12 @@ export function getCustomerGroupColumns(): TableColumnsType<ICustomerGroup> {
     },
     {
       key: "customers",
-      title: "Customers",
+      title: translator("customerGroups.columns.customers"),
       sorter: (a, b) => compareNumber(a.customers, b.customers),
     },
     {
       key: "licenseMix",
-      title: "License mix",
+      title: translator("customerGroups.columns.licenseMix"),
       render: (_, group) => <LicenseMixTags licenseMix={group.licenseMix} />,
     },
   ];

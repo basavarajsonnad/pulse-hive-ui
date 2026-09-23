@@ -7,6 +7,7 @@ import type {
   ITenantProps,
   TenantStatus,
 } from "./types";
+import translator from "@/i18n/translator";
 import styles from "./styles/TenantsTable.module.scss";
 
 const LOGIN_SUFFIX = ".portal26.ai";
@@ -66,15 +67,15 @@ export function getTenantCounts(tenants: ITenant[]) {
 }
 
 export const STATUS_FILTER_OPTIONS = [
-  { text: "In Progress", value: "in_progress" },
-  { text: "Active", value: "active" },
-  { text: "Failed", value: "failed" },
+  { text: translator("tenants.status.inProgress"), value: "in_progress" },
+  { text: translator("tenants.status.active"), value: "active" },
+  { text: translator("tenants.status.failed"), value: "failed" },
 ];
 
 const STATUS_LABELS: Record<TenantStatus, string> = {
-  in_progress: "In Progress",
-  active: "Active",
-  failed: "Failed",
+  in_progress: translator("tenants.status.inProgress"),
+  active: translator("tenants.status.active"),
+  failed: translator("tenants.status.failed"),
 };
 
 const STATUS_CLASS: Record<TenantStatus, string> = {
@@ -94,9 +95,9 @@ const CREATED_BUCKETS: Record<string, (daysAgo: number) => boolean> = {
 };
 
 export const CREATED_FILTER_OPTIONS = [
-  { text: "Last 7 days", value: "7d" },
-  { text: "Last 14 days", value: "14d" },
-  { text: "Older than 14 days", value: "older" },
+  { text: translator("common.dateRanges.last7Days"), value: "7d" },
+  { text: translator("common.dateRanges.last14Days"), value: "14d" },
+  { text: translator("common.dateRanges.olderThan14Days"), value: "older" },
 ];
 
 const selected = (filters: ColumnFilters, key: string) =>
@@ -135,11 +136,11 @@ const csvCell = (value: string | number) =>
 
 export function downloadTenantsCsv(tenants: ITenant[], filename: string) {
   const header = [
-    "Customer",
-    "License Package",
-    "Tenant / Login",
-    "Status",
-    "Created",
+    translator("tenants.csv.customer"),
+    translator("tenants.csv.licensePackage"),
+    translator("tenants.csv.login"),
+    translator("tenants.csv.status"),
+    translator("tenants.csv.createdAt"),
   ];
   const rows = tenants.map((t) => [
     t.customerName,
@@ -203,7 +204,7 @@ export function getTenantColumns(
   return [
     {
       key: "customer",
-      title: "Customer",
+      title: translator("tenants.columns.customer"),
       sorter: (a, b) => compareText(a.customerName, b.customerName),
       render: (_, tenant) => (
         <span className={styles.customerName}>{tenant.customerName}</span>
@@ -211,27 +212,27 @@ export function getTenantColumns(
     },
     {
       key: "login",
-      title: "Tenant / Login",
+      title: translator("tenants.columns.login"),
       sorter: (a, b) => compareText(getTenantLogin(a), getTenantLogin(b)),
       render: (_, tenant) => <TenantLogin tenant={tenant} />,
     },
     {
       key: "tier",
-      title: "License Package",
+      title: translator("tenants.columns.tier"),
       filters: TIER_FILTER_OPTIONS,
       filteredValue: columnFilters.tier ?? null,
       render: (_, tenant) => <TierTag tenant={tenant} />,
     },
     {
       key: "status",
-      title: "Status",
+      title: translator("tenants.columns.status"),
       filters: STATUS_FILTER_OPTIONS,
       filteredValue: columnFilters.status ?? null,
       render: (_, tenant) => <StatusPill tenant={tenant} />,
     },
     {
       key: "createdAt",
-      title: "Created",
+      title: translator("tenants.columns.createdAt"),
       sorter: (a, b) => compareText(a.createdAt, b.createdAt),
       filters: CREATED_FILTER_OPTIONS,
       filteredValue: columnFilters.createdAt ?? null,

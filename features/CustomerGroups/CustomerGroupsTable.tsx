@@ -23,6 +23,7 @@ import {
   getCustomerGroupColumns,
 } from "./utils";
 import { DEFAULT_PAGE_SIZE } from "@/utils/constants/appConstants";
+import translator from "@/i18n/translator";
 import styles from "./styles/CustomerGroupsTable.module.scss";
 
 export default function CustomerGroupsTable({
@@ -79,21 +80,25 @@ export default function CustomerGroupsTable({
   return (
     <div ref={cardRef} className={styles.card}>
       <div className={styles.toolbar}>
-        <h2 className={styles.title}>Customer groups</h2>
-        <span className={styles.count}>{tableData.length} of 15</span>
+        <h2 className={styles.title}>
+          {translator("customerGroups.table.title")}
+        </h2>
+        <span className={styles.count}>
+          {translator("common.countOf", { count: tableData.length, total: 15 })}
+        </span>
         <Input
           size="small"
           allowClear
           className={styles.search}
-          placeholder="Search..."
-          aria-label="Search customer groups"
+          placeholder={translator("common.search")}
+          aria-label={translator("customerGroups.table.searchAriaLabel")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <Popover
           trigger="click"
           placement="bottomRight"
-          title="Columns"
+          title={translator("common.columns")}
           getPopupContainer={getPopupContainer}
           content={
             <Checkbox.Group
@@ -109,24 +114,30 @@ export default function CustomerGroupsTable({
           <Button
             size="small"
             icon={<TableOutlined />}
-            aria-label="Choose columns"
+            aria-label={translator("common.chooseColumns")}
           />
         </Popover>
-        <Tooltip title="Download CSV">
+        <Tooltip title={translator("common.downloadCsv")}>
           <Button
             size="small"
             icon={<DownloadOutlined />}
-            aria-label="Download CSV"
+            aria-label={translator("common.downloadCsv")}
             onClick={handleOnDownload}
           />
         </Tooltip>
-        <Tooltip title={fullscreen ? "Exit full screen" : "Full screen"}>
+        <Tooltip
+          title={
+            fullscreen
+              ? translator("common.exitFullScreen")
+              : translator("common.fullScreen")
+          }
+        >
           <Button
             size="small"
             icon={
               fullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />
             }
-            aria-label="Toggle full screen"
+            aria-label={translator("common.toggleFullScreen")}
             onClick={handleOnToggleFullscreen}
           />
         </Tooltip>
@@ -146,7 +157,8 @@ export default function CustomerGroupsTable({
             pageSizeOptions: [10, 25, 50, 100],
             showSizeChanger: true,
             showQuickJumper: true,
-            showTotal: (total, [from, to]) => `${from}–${to} of ${total}`,
+            showTotal: (total, [from, to]) =>
+              translator("common.pageRange", { from, to, total }),
             size: "small",
           }}
         />

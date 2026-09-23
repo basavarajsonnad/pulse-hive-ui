@@ -5,6 +5,7 @@ import { Button, Checkbox, Collapse, Drawer } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
 import type { IFiltersDrawerProps, SelectedFilters } from "./types";
 import { EMPTY_SELECTED_FILTERS, FILTER_SECTIONS } from "./utils";
+import translator from "@/i18n/translator";
 import styles from "./styles/FiltersDrawer.module.scss";
 
 export default function FiltersDrawer({ open, onClose }: IFiltersDrawerProps) {
@@ -25,7 +26,7 @@ export default function FiltersDrawer({ open, onClose }: IFiltersDrawerProps) {
     <Drawer
       open={open}
       onClose={onClose}
-      title="Filters"
+      title={translator("filtersDrawer.title")}
       size={350}
       closable={{ placement: "end" }}
       destroyOnHidden
@@ -33,10 +34,10 @@ export default function FiltersDrawer({ open, onClose }: IFiltersDrawerProps) {
       footer={
         <div className={styles.footer}>
           <Button type="primary" block onClick={handleOnApply}>
-            Apply Filters
+            {translator("filtersDrawer.apply")}
           </Button>
           <Button danger className={styles.clear} onClick={handleOnClear}>
-            Clear
+            {translator("filtersDrawer.clear")}
           </Button>
         </div>
       }

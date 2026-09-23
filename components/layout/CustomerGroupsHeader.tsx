@@ -2,18 +2,22 @@
 
 import { useState } from "react";
 import { Tag } from "antd";
+import translator from "@/i18n/translator";
 import TabNav, { type ITabNavItem } from "./TabNav";
 import styles from "./styles/TenantSetupHeader.module.scss";
 
 const CUSTOMER_GROUPS_TABS: ITabNavItem[] = [
   {
     key: "group-management",
-    label: "Group Management",
+    label: translator("layout.customerGroupsHeader.tabs.groupManagement"),
     href: "/customers/customer-groups/group-management",
   },
 ];
 
-const DEFAULT_FILTERS = ["Last 24 hours", "Last 7 days"];
+const DEFAULT_FILTERS = [
+  translator("common.dateRanges.last24Hours"),
+  translator("common.dateRanges.last7Days"),
+];
 
 export default function CustomerGroupsHeader() {
   const [filters, setFilters] = useState(DEFAULT_FILTERS);
@@ -27,7 +31,9 @@ export default function CustomerGroupsHeader() {
         <TabNav items={CUSTOMER_GROUPS_TABS} variant="secondary" />
       </div>
       <div className={styles.filters}>
-        <span className={styles.filtersLabel}>FILTERS:</span>
+        <span className={styles.filtersLabel}>
+          {translator("common.filtersLabel")}
+        </span>
         {filters.length ? (
           filters.map((filter) => (
             <Tag
@@ -39,7 +45,7 @@ export default function CustomerGroupsHeader() {
             </Tag>
           ))
         ) : (
-          <span className={styles.none}>None</span>
+          <span className={styles.none}>{translator("common.none")}</span>
         )}
       </div>
     </div>

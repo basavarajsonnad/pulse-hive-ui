@@ -3,6 +3,7 @@
 import { Tabs } from "antd";
 import type { ITenantProps } from "./types";
 import { StatusPill, TenantLogin, TierTag, formatDate } from "./utils";
+import translator from "@/i18n/translator";
 import styles from "./styles/TenantDetails.module.scss";
 
 export default function TenantDetails({ tenant }: ITenantProps) {
@@ -20,17 +21,19 @@ export default function TenantDetails({ tenant }: ITenantProps) {
         items={[
           {
             key: "general",
-            label: "General",
+            label: translator("tenants.details.generalTab"),
             children: (
               <section>
-                <h3 className={styles.heading}>TENANT</h3>
+                <h3 className={styles.heading}>
+                  {translator("tenants.details.sectionHeading")}
+                </h3>
                 <dl className={styles.list}>
                   <div className={styles.row}>
-                    <dt>Tenant name</dt>
+                    <dt>{translator("tenants.details.nameLabel")}</dt>
                     <dd>{tenant?.tenantName}</dd>
                   </div>
                   <div className={styles.row}>
-                    <dt>Created</dt>
+                    <dt>{translator("tenants.details.createdLabel")}</dt>
                     <dd>{formatDate(tenant.createdAt)}</dd>
                   </div>
                 </dl>

@@ -2,6 +2,7 @@
 
 import { Button, Form, Input } from "antd";
 import { useAddCustomerGroupMutation } from "@/features/CustomerGroups/api";
+import translator from "@/i18n/translator";
 import type {
   ICreateCustomerGroupRequest,
   ICustomerGroupFormProps,
@@ -36,17 +37,25 @@ export default function CustomerGroupForm({
     >
       <Form.Item
         name="customerGroup"
-        label="Customer group name"
-        rules={[{ required: true, whitespace: true, message: "Enter a name" }]}
+        label={translator("customerGroups.form.nameLabel")}
+        rules={[
+          {
+            required: true,
+            whitespace: true,
+            message: translator("customerGroups.form.nameRequiredMessage"),
+          },
+        ]}
       >
-        <Input placeholder="e.g. Texas – DFW" />
+        <Input
+          placeholder={translator("customerGroups.form.namePlaceholder")}
+        />
       </Form.Item>
 
       <div className={styles.actions}>
         <Button type="primary" htmlType="submit" loading={isLoading}>
-          Create group
+          {translator("customerGroups.form.submit")}
         </Button>
-        <Button onClick={onClose}>Cancel</Button>
+        <Button onClick={onClose}>{translator("common.cancel")}</Button>
       </div>
     </Form>
   );

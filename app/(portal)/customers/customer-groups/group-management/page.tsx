@@ -6,6 +6,7 @@ import { PlusOutlined } from "@ant-design/icons";
 import CustomerGroupForm from "@/features/CustomerGroups/CustomerGroupForm";
 import CustomerGroupsTable from "@/features/CustomerGroups/CustomerGroupsTable";
 import { CUSTOMER_GROUPS_MOCK } from "@/features/CustomerGroups/utils";
+import translator from "@/i18n/translator";
 import styles from "./page.module.scss";
 
 export default function GroupManagementPage() {
@@ -33,14 +34,15 @@ export default function GroupManagementPage() {
     <>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Customer Groups</h1>
+          <h1 className={styles.title}>
+            {translator("customerGroups.page.title")}
+          </h1>
           <p className={styles.subtitle}>
-            How Acme MSP organizes its customers — one or more Customer Success
-            professionals service each group
+            {translator("customerGroups.page.subtitle")}
           </p>
         </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleOnAdd}>
-          Add customer group
+          {translator("customerGroups.page.addButton")}
         </Button>
       </div>
 
@@ -49,7 +51,7 @@ export default function GroupManagementPage() {
       <Drawer
         open={drawerOpen}
         onClose={handleOnCloseDrawer}
-        title="Add customer group"
+        title={translator("customerGroups.page.addDrawerTitle")}
         size={450}
         closable={{ placement: "end" }}
         destroyOnHidden
