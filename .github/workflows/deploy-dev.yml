@@ -30,20 +30,16 @@ jobs:
         with:
           path: |
             node_modules
-            dev-proxy/node_modules
-          key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', 'dev-proxy/package-lock.json') }}
+          key: node-modules-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             node-modules-${{ runner.os }}-
       - name: Install Dependencies
-        run: |
-          pnpm install --frozen-lockfile &&
-          cd dev-proxy &&
-          npm ci
+        run: pnpm install --frozen-lockfile
       - name: Cache Next.js Build
         uses: actions/cache@v3
         with:
           path: .next/cache
-          key: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml', 'dev-proxy/package-lock.json') }}
+          key: nextjs-${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             nextjs-${{ runner.os }}-
       # - name: Validate i18n keys
@@ -66,8 +62,8 @@ jobs:
         with:
           args: --follow-symlinks --delete --no-progress
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEV_S3CLOUDFRONT_USER_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEV_S3CLOUDFRONT_USER_SECRET_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_STG_S3CLOUDFRONT_USER_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_STG_S3CLOUDFRONT_USER_SECRET_KEY }}
           AWS_REGION: "ap-south-1"
           AWS_S3_BUCKET: "pulse-hive-dev.portal26.ai"
           S3_SOURCE_DIR: "dist"
@@ -78,8 +74,8 @@ jobs:
         with:
           args: --follow-symlinks --no-progress
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_DEV_S3CLOUDFRONT_USER_ACCESS_KEY }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_DEV_S3CLOUDFRONT_USER_SECRET_KEY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_STG_S3CLOUDFRONT_USER_ACCESS_KEY }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_STG_S3CLOUDFRONT_USER_SECRET_KEY }}
           AWS_REGION: "ap-south-1"
           AWS_S3_BUCKET: "pulse-hive-dev.portal26.ai"
           CLOUDFRONT_DISTRIBUTION_ID: ${{ secrets.PULSE_DEV_CLOUDFRONT_DISTRIBUTION_ID }}

@@ -1,26 +1,17 @@
 import type { NextConfig } from "next";
 
-const TENANTS_PATH = "/customers/tenant-setup/tenants";
-
 const nextConfig: NextConfig = {
-  async redirects() {
-    return [
-      { source: "/", destination: TENANTS_PATH, permanent: false },
-      { source: "/customers", destination: TENANTS_PATH, permanent: false },
-      {
-        source: "/customers/tenant-setup",
-        destination: TENANTS_PATH,
-        permanent: false,
-      },
-    ];
-  },
-  // Proxy /api/* to the backend so the browser stays same-origin (no CORS).
-  async rewrites() {
-    const { BASE_URL } = process.env;
-    return BASE_URL
-      ? [{ source: "/api/:path*", destination: `${BASE_URL}/api/:path*` }]
-      : [];
-  },
+  // Static export: emit plain HTML/CSS/JS into `dist/` for S3 + CloudFront
+  // hosting. There is no Node server at runtime, so `redirects()`,
+  // `rewrites()` and route handlers (the old /api BFF) are not available:
+  //   - the root redirects are handled client-side (see app/page.tsx and the
+  //     RedirectToTenants pages under /customers)
+  //   - the browser now calls the Hive backend directly via
+  //     NEXT_PUBLIC_API_BASE_URL (see utils/constants/apiConstants.ts)
+  output: "export",
+  distDir: "dist",
+  trailingSlash: true,
+  images: { unoptimized: true },
 };
 
 export default nextConfig;
