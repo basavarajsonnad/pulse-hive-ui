@@ -32,7 +32,6 @@ function hiveError(status: number, body: unknown): HiveClientError {
     typeof record?.message === "string"
       ? record.message
       : "Unable to complete request";
-  // Preserve auth failures so the UI can send the user back to login.
   const httpStatus =
     status === 401 || status === 403 || status === 404 ? status : 400;
 
@@ -96,11 +95,14 @@ export async function createTenant(
   let body = rawBody;
   try {
     const parsed = JSON.parse(rawBody) as Record<string, unknown>;
-    // Hive CreateTenantRequest only accepts customerName + sso.
-    const { customerName, sso } = parsed;
-    body = JSON.stringify({ customerName, sso });
+    const licensePackage = parsed.licensePackage ?? parsed.liscencePackage;
+    body = JSON.stringify({
+      customerName: parsed.customerName,
+      licensePackage,
+      sso: parsed.sso,
+    });
   } catch {
-    // leave rawBody; Hive will validate
+    console.warn("createTenant: unable to parse request body", rawBody);
   }
 
   return hiveFetch("/api/v1/tenants", {
