@@ -11,12 +11,10 @@ export async function GET(
   request: Request,
   context: { params: Promise<{ customerId: string }> },
 ) {
+  const cookie = request.headers.get("cookie") ?? "";
   try {
     const { customerId } = await context.params;
-    const signin = await getSigninRegistration(
-      customerId,
-      request.headers.get("cookie"),
-    );
+    const signin = await getSigninRegistration(customerId, { cookie });
     return NextResponse.json(signin, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {

@@ -48,15 +48,17 @@ async function parseJson(response: Response): Promise<unknown> {
   }
 }
 
-type HiveFetchOptions = RequestInit & {
-  /** Browser Cookie header from the Next.js route (forwards HIVE_SESSION to Hive). */
-  cookie?: string | null;
-};
+type HiveRequestOptions = { cookie?: string };
 
-async function hiveFetch(path: string, init: HiveFetchOptions = {}): Promise<unknown> {
-  const { cookie, headers: initHeaders, ...rest } = init;
-  const headers = new Headers(initHeaders);
+const HIVE_FETCH_TIMEOUT_MS = 15_000;
 
+async function hiveFetch(
+  path: string,
+  init?: RequestInit,
+  options?: HiveRequestOptions,
+): Promise<unknown> {
+  const headers = new Headers(init?.headers);
+  const cookie = options?.cookie?.trim();
   if (cookie) {
     headers.set("Cookie", cookie);
   }
@@ -65,9 +67,10 @@ async function hiveFetch(path: string, init: HiveFetchOptions = {}): Promise<unk
 
   try {
     response = await fetch(`${hiveBaseUrl()}${path}`, {
-      ...rest,
+      ...init,
       headers,
       cache: "no-store",
+      signal: init?.signal ?? AbortSignal.timeout(HIVE_FETCH_TIMEOUT_MS),
     });
   } catch {
     throw new HiveClientError(400, VALIDATION_FAILED, "Unable to reach Hive");
@@ -84,7 +87,7 @@ async function hiveFetch(path: string, init: HiveFetchOptions = {}): Promise<unk
 
 export async function createTenant(
   rawBody: string,
-  cookie?: string | null,
+  options?: HiveRequestOptions,
 ): Promise<unknown> {
   let body = rawBody;
   try {
@@ -99,12 +102,15 @@ export async function createTenant(
     // leave rawBody; Hive will validate
   }
 
-  return hiveFetch("/api/v1/tenants", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body,
-    cookie,
-  });
+  return hiveFetch(
+    "/api/v1/tenants",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+    },
+    options,
+  );
 }
 
 type HiveCustomer = {
@@ -166,22 +172,20 @@ function toUiTenantsResponse(body: unknown) {
 
 export async function listTenants(
   search = "",
-  cookie?: string | null,
+  options?: HiveRequestOptions,
 ): Promise<unknown> {
   const query = search.startsWith("?") ? search : search ? `?${search}` : "";
-  const body = await hiveFetch(`/api/v1/tenants${query}`, {
-    method: "GET",
-    cookie,
-  });
+  const body = await hiveFetch(`/api/v1/tenants${query}`, { method: "GET" }, options);
   return toUiTenantsResponse(body);
 }
 
 export async function getSigninRegistration(
   customerId: string,
-  cookie?: string | null,
+  options?: HiveRequestOptions,
 ): Promise<unknown> {
-  return hiveFetch(`/api/v1/tenants/${encodeURIComponent(customerId)}`, {
-    method: "GET",
-    cookie,
-  });
+  return hiveFetch(
+    `/api/v1/tenants/${encodeURIComponent(customerId)}`,
+    { method: "GET" },
+    options,
+  );
 }

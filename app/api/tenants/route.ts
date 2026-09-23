@@ -8,9 +8,10 @@ function errorResponse(status: number, code: ApiError["code"], message: string) 
 }
 
 export async function GET(request: Request) {
+  const cookie = request.headers.get("cookie") ?? "";
   try {
     const search = new URL(request.url).search;
-    const customers = await listTenants(search, request.headers.get("cookie"));
+    const customers = await listTenants(search, { cookie });
     return NextResponse.json(customers, { status: 200 });
   } catch (error) {
     if (error instanceof HiveClientError) {
@@ -22,10 +23,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const cookie = request.headers.get("cookie") ?? "";
   const rawBody = await request.text();
 
   try {
-    const created = await createTenant(rawBody);
+    const created = await createTenant(rawBody, { cookie });
     return NextResponse.json(created, { status: 202 });
   } catch (error) {
     if (error instanceof HiveClientError) {
