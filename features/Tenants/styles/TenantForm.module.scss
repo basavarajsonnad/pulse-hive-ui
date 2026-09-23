@@ -1,0 +1,21 @@
+@use "@/styles/variables" as vars;
+
+.intro {
+  margin-bottom: vars.$spacing-lg;
+  color: vars.$color-muted;
+  line-height: 1.6;
+
+  strong {
+    color: vars.$color-text;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: vars.$spacing-sm;
+  margin-top: vars.$spacing-lg;
+}
+
+.required {
+  color: #ff4d4f;
+}

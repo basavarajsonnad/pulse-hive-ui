@@ -1,5 +1,17 @@
 // Shared SCSS tokens for your own layout/components.
-// Import where needed:  @use "../styles/variables" as vars;
+// Keep colours in sync with theme/themeConfig.ts.
+$spacing-sm: 8px;
 $spacing-md: 16px;
-$spacing-lg: 48px;
+$spacing-lg: 24px;
 $breakpoint-md: 768px;
+
+$color-primary: #7c3aed;
+$color-primary-soft: #f1ebff;
+$color-text: #1f2033;
+$color-muted: #8b8fa3;
+$color-faint: #c4c6d2;
+$color-border: #e8e9f0;
+$color-page-bg: #f3f4f8;
+$color-surface: #ffffff;
+
+$sidebar-width: 198px;

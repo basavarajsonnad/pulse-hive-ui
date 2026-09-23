@@ -1,0 +1,9 @@
+.next
+node_modules
+public
+pnpm-lock.yaml
+package-lock.json
+tsconfig.tsbuildinfo
+next-env.d.ts
+AGENTS.md
+CLAUDE.md
