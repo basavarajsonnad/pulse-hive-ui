@@ -1,4 +1,5 @@
 import type { TableProps } from "antd";
+import translator from "@/i18n/translator";
 
 export type { DateRange } from "@/shared/hooks/useDateRangeFilter";
 
@@ -6,7 +7,7 @@ export const TENANT_TIERS = ["Basic", "Intermediate", "Advanced"] as const;
 
 export const TENANT_TIER_OPTIONS = TENANT_TIERS.map((tier) => ({
   value: tier.toLowerCase(),
-  label: tier,
+  label: translator(`tenants.tiers.${tier.toLowerCase()}`),
 }));
 
 export type TenantStatus = "in_progress" | "active" | "failed";

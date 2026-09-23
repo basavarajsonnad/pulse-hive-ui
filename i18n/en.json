@@ -1,0 +1,173 @@
+{
+  "common": {
+    "filters": "Filters",
+    "filtersLabel": "FILTERS:",
+    "none": "None",
+    "search": "Search...",
+    "columns": "Columns",
+    "chooseColumns": "Choose columns",
+    "downloadCsv": "Download CSV",
+    "fullScreen": "Full screen",
+    "exitFullScreen": "Exit full screen",
+    "toggleFullScreen": "Toggle full screen",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "countOf": "{{count}} of {{total}}",
+    "pageRange": "{{from}}–{{to}} of {{total}}",
+    "dateRanges": {
+      "last24Hours": "Last 24 hours",
+      "last7Days": "Last 7 days",
+      "last14Days": "Last 14 days",
+      "last30Days": "Last 30 days",
+      "lastQuarter": "Last quarter",
+      "olderThan14Days": "Older than 14 days",
+      "custom": "Custom"
+    }
+  },
+  "layout": {
+    "sidebar": {
+      "ariaPrimary": "Primary",
+      "nav": {
+        "customers": "Customers"
+      }
+    },
+    "topBar": {
+      "section": "CUSTOMERS",
+      "filtersAriaLabel": "Filters",
+      "tabs": {
+        "tenantSetup": "Tenant Setup",
+        "customerGroups": "Customer Groups"
+      }
+    },
+    "customerGroupsHeader": {
+      "tabs": {
+        "groupManagement": "Group Management"
+      }
+    },
+    "tenantSetupHeader": {
+      "tabs": {
+        "tenants": "Tenants"
+      }
+    }
+  },
+  "customerGroups": {
+    "page": {
+      "title": "Customer Groups",
+      "subtitle": "How Acme MSP organizes its customers — one or more Customer Success professionals service each group",
+      "addButton": "Add customer group",
+      "addDrawerTitle": "Add customer group"
+    },
+    "table": {
+      "title": "Customer groups",
+      "searchAriaLabel": "Search customer groups"
+    },
+    "columns": {
+      "customerGroup": "Customer group",
+      "customers": "Customers",
+      "licenseMix": "License mix"
+    },
+    "csv": {
+      "customerGroup": "Customer Group",
+      "customers": "Customers",
+      "basic": "Basic",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "form": {
+      "nameLabel": "Customer group name",
+      "nameRequiredMessage": "Enter a name",
+      "namePlaceholder": "e.g. Texas – DFW",
+      "submit": "Create group"
+    }
+  },
+  "tenants": {
+    "page": {
+      "title": "Tenants",
+      "subtitle": "{{active}} active · {{running}} in progress · {{failed}} failed on this page",
+      "addButton": "Add customer",
+      "addDrawerTitle": "Add customer (single)"
+    },
+    "table": {
+      "title": "Customers — All customer groups",
+      "searchAriaLabel": "Search customers",
+      "loadError": "Couldn't load tenants"
+    },
+    "columns": {
+      "customer": "Customer",
+      "login": "Tenant / Login",
+      "tier": "License Package",
+      "status": "Status",
+      "createdAt": "Created"
+    },
+    "csv": {
+      "customer": "Customer",
+      "licensePackage": "License Package",
+      "login": "Tenant / Login",
+      "status": "Status",
+      "createdAt": "Created"
+    },
+    "status": {
+      "inProgress": "In Progress",
+      "active": "Active",
+      "failed": "Failed"
+    },
+    "tiers": {
+      "basic": "Basic",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "details": {
+      "generalTab": "General",
+      "sectionHeading": "TENANT",
+      "nameLabel": "Tenant name",
+      "createdLabel": "Created"
+    }
+  },
+  "filtersDrawer": {
+    "title": "Filters",
+    "apply": "Apply Filters",
+    "clear": "Clear",
+    "sections": {
+      "dateRange": "Date Range",
+      "customerGroup": "Customer Group",
+      "licensePackage": "License Package",
+      "tenantStatus": "Tenant Status"
+    }
+  },
+  "tenantForm": {
+    "intro": "Adds a single customer with your saved defaults. Taking on many at once? Use <bulkUpload>Bulk Upload</bulkUpload> instead.",
+    "fields": {
+      "customerName": {
+        "label": "Customer name",
+        "requiredMessage": "Enter a customer name",
+        "patternMessage": "Use 3–25 characters: letters, numbers and hyphens only"
+      },
+      "licensePackage": {
+        "label": "License package",
+        "extra": "Basic: Discovery, Visibility & Risk · Intermediate: + Preventive Controls · Advanced: all capabilities"
+      },
+      "providerName": {
+        "label": "Provider name",
+        "requiredMessage": "Enter a provider name",
+        "placeholder": "Acme-Okta"
+      },
+      "metadataUrl": {
+        "label": "IdP metadata URL",
+        "requiredMessage": "Enter a URL",
+        "placeholder": "https://your-idp.com/app/.../sso/saml/metadata"
+      },
+      "emailAttribute": {
+        "label": "Email attribute",
+        "requiredMessage": "Enter an email attribute"
+      },
+      "groupsAttribute": {
+        "label": "Groups attribute",
+        "requiredMessage": "Enter a groups attribute"
+      }
+    },
+    "actions": {
+      "submit": "Create tenant",
+      "cancel": "Cancel"
+    }
+  }
+}

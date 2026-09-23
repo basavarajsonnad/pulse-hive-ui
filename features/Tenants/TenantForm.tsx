@@ -1,6 +1,8 @@
 "use client";
 
 import { Button, Form, Input, Select } from "antd";
+import { Trans } from "react-i18next";
+import translator from "@/i18n/translator";
 import { useAddTenantMutation } from "@/features/Tenants/api";
 import { TENANT_FORM_INITIAL_VALUES } from "@/utils/constants/appConstants";
 import {
@@ -22,8 +24,10 @@ export default function TenantForm({ onClose }: ITenantFormProps) {
   return (
     <>
       <p className={styles.intro}>
-        Adds a single customer with your saved defaults. Taking on many at once?
-        Use <strong>Bulk Upload</strong> instead.
+        <Trans
+          i18nKey="tenantForm.intro"
+          components={{ bulkUpload: <strong /> }}
+        />
       </p>
 
       <Form<ICreateTenantRequest>
@@ -42,12 +46,19 @@ export default function TenantForm({ onClose }: ITenantFormProps) {
       >
         <Form.Item
           name="customerName"
-          label="Customer name"
+          label={translator("tenantForm.fields.customerName.label")}
           rules={[
-            { required: true, message: "Enter a customer name" },
+            {
+              required: true,
+              message: translator(
+                "tenantForm.fields.customerName.requiredMessage",
+              ),
+            },
             {
               pattern: CUSTOMER_NAME_PATTERN,
-              message: "Use 3–25 characters: letters, numbers and hyphens only",
+              message: translator(
+                "tenantForm.fields.customerName.patternMessage",
+              ),
             },
           ]}
         >
@@ -56,42 +67,62 @@ export default function TenantForm({ onClose }: ITenantFormProps) {
 
         <Form.Item
           name="liscencePackage"
-          label="License package"
-          extra="Basic: Discovery, Visibility & Risk · Intermediate: + Preventive Controls · Advanced: all capabilities"
+          label={translator("tenantForm.fields.licensePackage.label")}
+          extra={translator("tenantForm.fields.licensePackage.extra")}
         >
           <Select options={TENANT_TIER_OPTIONS} />
         </Form.Item>
 
         <Form.Item
           name={["sso", "providerName"]}
-          label="Provider name"
+          label={translator("tenantForm.fields.providerName.label")}
           rules={[
             {
               required: true,
               whitespace: true,
-              message: "Enter a provider name",
+              message: translator(
+                "tenantForm.fields.providerName.requiredMessage",
+              ),
             },
           ]}
         >
-          <Input placeholder="Acme-Okta" />
+          <Input
+            placeholder={translator(
+              "tenantForm.fields.providerName.placeholder",
+            )}
+          />
         </Form.Item>
 
         <Form.Item
           name={["sso", "metadataUrl"]}
-          label="IdP metadata URL"
-          rules={[{ required: true, whitespace: true, message: "Enter a URL" }]}
-        >
-          <Input placeholder="https://your-idp.com/app/.../sso/saml/metadata" />
-        </Form.Item>
-
-        <Form.Item
-          name={["sso", "emailAttribute"]}
-          label="Email attribute"
+          label={translator("tenantForm.fields.metadataUrl.label")}
           rules={[
             {
               required: true,
               whitespace: true,
-              message: "Enter an email attribute",
+              message: translator(
+                "tenantForm.fields.metadataUrl.requiredMessage",
+              ),
+            },
+          ]}
+        >
+          <Input
+            placeholder={translator(
+              "tenantForm.fields.metadataUrl.placeholder",
+            )}
+          />
+        </Form.Item>
+
+        <Form.Item
+          name={["sso", "emailAttribute"]}
+          label={translator("tenantForm.fields.emailAttribute.label")}
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: translator(
+                "tenantForm.fields.emailAttribute.requiredMessage",
+              ),
             },
           ]}
         >
@@ -100,12 +131,14 @@ export default function TenantForm({ onClose }: ITenantFormProps) {
 
         <Form.Item
           name={["sso", "groupsAttribute"]}
-          label="Groups attribute"
+          label={translator("tenantForm.fields.groupsAttribute.label")}
           rules={[
             {
               required: true,
               whitespace: true,
-              message: "Enter a groups attribute",
+              message: translator(
+                "tenantForm.fields.groupsAttribute.requiredMessage",
+              ),
             },
           ]}
         >
@@ -114,9 +147,11 @@ export default function TenantForm({ onClose }: ITenantFormProps) {
 
         <div className={styles.actions}>
           <Button type="primary" htmlType="submit" loading={isLoading}>
-            Create tenant
+            {translator("tenantForm.actions.submit")}
           </Button>
-          <Button onClick={onClose}>Cancel</Button>
+          <Button onClick={onClose}>
+            {translator("tenantForm.actions.cancel")}
+          </Button>
         </div>
       </Form>
     </>

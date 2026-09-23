@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Alert,
   Button,
   Checkbox,
   ConfigProvider,
@@ -10,7 +9,6 @@ import {
   Popover,
   Table,
   Tooltip,
-  type TableProps,
 } from "antd";
 import {
   DownloadOutlined,
@@ -18,42 +16,28 @@ import {
   FullscreenOutlined,
   TableOutlined,
 } from "@ant-design/icons";
-import type { ColumnFilters, ITenant, ITenantsTableProps } from "./types";
+import type { ICustomerGroupsTableProps } from "./types";
 import {
-  downloadTenantsCsv,
-  filterTenants,
-  getTenantColumns,
-  matchesColumnFilters,
+  downloadCustomerGroupsCsv,
+  filterCustomerGroups,
+  getCustomerGroupColumns,
 } from "./utils";
-import { useDateRangeFilter } from "@/shared/hooks/useDateRangeFilter";
+import { DEFAULT_PAGE_SIZE } from "@/utils/constants/appConstants";
 import translator from "@/i18n/translator";
-import styles from "./styles/TenantsTable.module.scss";
+import styles from "./styles/CustomerGroupsTable.module.scss";
 
-export default function TenantsTable({
-  tenants,
+export default function CustomerGroupsTable({
+  customerGroups,
   isLoading,
-  isError,
-  onRetry,
-  page,
-  pageSize,
-  totalElements,
-  onPageChange,
-  onRowClick,
-}: ITenantsTableProps) {
-  const { dateRange } = useDateRangeFilter();
+}: ICustomerGroupsTableProps) {
   const [search, setSearch] = useState("");
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFilters>({});
   const [hiddenColumns, setHiddenColumns] = useState<string[]>([]);
   const [fullscreen, setFullscreen] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
 
   const tableData = useMemo(
-    () =>
-      filterTenants(tenants, search, dateRange).filter((t) =>
-        matchesColumnFilters(t, columnFilters),
-      ),
-    [tenants, search, dateRange, columnFilters],
+    () => filterCustomerGroups(customerGroups, search),
+    [customerGroups, search],
   );
 
   useEffect(() => {
@@ -72,26 +56,13 @@ export default function TenantsTable({
     else cardRef.current?.requestFullscreen();
   };
 
-  const handleOnTableChange: TableProps<ITenant>["onChange"] = (
-    pagination,
-    filters,
-  ) => {
-    setColumnFilters(filters);
-    if (pagination.current && pagination.pageSize) {
-      onPageChange(pagination.current, pagination.pageSize);
-    }
-  };
+  const handleOnDownload = () =>
+    downloadCustomerGroupsCsv(tableData, "customer-groups.csv");
 
-  const handleOnDownload = () => downloadTenantsCsv(tableData, "tenants.csv");
-
-  const handleOnRow: TableProps<ITenant>["onRow"] = (tenant) => ({
-    onClick: () => onRowClick(tenant),
-  });
-
-  const columns = getTenantColumns(columnFilters);
+  const columns = getCustomerGroupColumns();
 
   const toggleableColumns = columns
-    .filter((c) => c.key !== "customer")
+    .filter((c) => c.key !== "customerGroup")
     .map((c) => ({ value: String(c.key), label: String(c.title) }));
   const visibleColumns = columns.filter(
     (c) => !hiddenColumns.includes(String(c.key)),
@@ -109,19 +80,18 @@ export default function TenantsTable({
   return (
     <div ref={cardRef} className={styles.card}>
       <div className={styles.toolbar}>
-        <h2 className={styles.title}>{translator("tenants.table.title")}</h2>
+        <h2 className={styles.title}>
+          {translator("customerGroups.table.title")}
+        </h2>
         <span className={styles.count}>
-          {translator("common.countOf", {
-            count: tableData.length,
-            total: totalElements,
-          })}
+          {translator("common.countOf", { count: tableData.length, total: 15 })}
         </span>
         <Input
           size="small"
           allowClear
           className={styles.search}
           placeholder={translator("common.search")}
-          aria-label={translator("tenants.table.searchAriaLabel")}
+          aria-label={translator("customerGroups.table.searchAriaLabel")}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
@@ -173,36 +143,18 @@ export default function TenantsTable({
         </Tooltip>
       </div>
 
-      {isError && (
-        <Alert
-          type="error"
-          showIcon
-          title={translator("tenants.table.loadError")}
-          action={
-            <Button size="small" onClick={onRetry}>
-              {translator("common.retry")}
-            </Button>
-          }
-        />
-      )}
-
-      {/* Popups must render inside the card or they vanish in full screen. */}
       <ConfigProvider getPopupContainer={getPopupContainer}>
-        <Table<ITenant>
+        <Table
           size="small"
-          rowKey="customerName"
+          rowKey="customerGroup"
           columns={visibleColumns}
           dataSource={tableData}
           loading={isLoading}
-          onChange={handleOnTableChange}
-          onRow={handleOnRow}
           scroll={{ x: "max-content" }}
           pagination={{
             placement: ["bottomStart"],
-            current: page,
-            pageSize,
-            total: totalElements,
-            pageSizeOptions: [10, 20, 50, 100],
+            defaultPageSize: DEFAULT_PAGE_SIZE,
+            pageSizeOptions: [10, 25, 50, 100],
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total, [from, to]) =>

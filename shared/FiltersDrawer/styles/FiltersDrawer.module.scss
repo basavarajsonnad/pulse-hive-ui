@@ -1,0 +1,40 @@
+@use "@/styles/variables" as vars;
+
+.collapse :global(.ant-collapse-item) {
+  border-bottom: 1px solid vars.$color-border;
+}
+
+.collapse :global(.ant-collapse-header) {
+  padding: 12px 0 !important;
+  font-weight: 600;
+}
+
+.collapse :global(.ant-collapse-content-box) {
+  padding: 4px 0 16px !important;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  padding: 12px;
+  background: vars.$color-page-bg;
+  border-radius: 6px;
+}
+
+.footer {
+  display: flex;
+  gap: vars.$spacing-sm;
+}
+
+.clear {
+  background: #fde3e3;
+  color: #b42323;
+  border-color: transparent;
+
+  &:hover {
+    background: #fcd3d3;
+    color: #b42323;
+  }
+}

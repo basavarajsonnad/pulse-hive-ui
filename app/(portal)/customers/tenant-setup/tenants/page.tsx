@@ -10,6 +10,7 @@ import type { ITenant } from "@/features/Tenants/types";
 import { EMPTY_TENANTS, getTenantCounts } from "@/features/Tenants/utils";
 import { useListTenantsQuery } from "@/features/Tenants/api";
 import { DEFAULT_PAGE_SIZE } from "@/utils/constants/appConstants";
+import translator from "@/i18n/translator";
 import styles from "./page.module.scss";
 
 export default function TenantsPage() {
@@ -52,14 +53,13 @@ export default function TenantsPage() {
     <>
       <div className={styles.header}>
         <div>
-          <h1 className={styles.title}>Tenants</h1>
+          <h1 className={styles.title}>{translator("tenants.page.title")}</h1>
           <p className={styles.subtitle}>
-            {active} active · {running} in progress · {failed} failed on this
-            page
+            {translator("tenants.page.subtitle", { active, running, failed })}
           </p>
         </div>
         <Button type="primary" icon={<PlusOutlined />} onClick={handleOnAdd}>
-          Add customer
+          {translator("tenants.page.addButton")}
         </Button>
       </div>
 
@@ -78,7 +78,7 @@ export default function TenantsPage() {
       <Drawer
         open={drawerOpen}
         onClose={handleOnCloseDrawer}
-        title="Add customer (single)"
+        title={translator("tenants.page.addDrawerTitle")}
         size={450}
         closable={{ placement: "end" }}
         destroyOnHidden
