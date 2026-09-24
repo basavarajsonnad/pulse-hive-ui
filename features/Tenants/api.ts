@@ -25,7 +25,6 @@ const tenantsApi = createApi({
         url: TENANTS,
         method: GET,
         data: { page, size },
-        requiresAuth: false,
       }),
       transformResponse: toUiTenantsResponse,
       providesTags: ["tenantsApi"],
@@ -35,7 +34,6 @@ const tenantsApi = createApi({
         url: TENANTS,
         method: POST,
         data: toHiveCreateTenant(data),
-        requiresAuth: false,
       }),
       invalidatesTags: ["tenantsApi"],
     }),
@@ -43,7 +41,6 @@ const tenantsApi = createApi({
       query: (customerId) => ({
         url: `${TENANTS}/${encodeURIComponent(customerId)}`,
         method: GET,
-        requiresAuth: false,
       }),
       transformResponse: toUiTenantDetails,
       providesTags: ["tenantsApi"],

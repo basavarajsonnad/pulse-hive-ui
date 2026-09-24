@@ -7,9 +7,6 @@ export const PUT = "PUT";
 export const PATCH = "PATCH";
 export const DELETE = "DELETE";
 
-// Seconds before expiry at which the access token is refreshed.
-export const REFRESH_THRESHOLD = 60;
-
 export const API_STATUS = {
   UNAUTHORIZED: 401,
 } as const;

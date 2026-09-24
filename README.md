@@ -4,15 +4,15 @@ Next.js (App Router) + Ant Design + Redux Toolkit + SCSS.
 
 ## Stack
 
-| Concern         | Choice                      |
-| --------------- | --------------------------- |
-| Framework       | Next.js 16 (App Router)     |
-| Language        | TypeScript                  |
-| UI library      | Ant Design 6                |
-| State           | Redux Toolkit + React-Redux |
-| Styling         | SCSS (CSS Modules)          |
-| Package manager | pnpm                        |
-| Node            | 22 (see `.nvmrc`)           |
+| Concern         | Choice                          |
+| --------------- | ------------------------------- |
+| Framework       | Next.js 16 (App Router)         |
+| Language        | TypeScript                      |
+| UI library      | Ant Design 6                    |
+| State           | Redux Toolkit + React-Redux     |
+| Styling         | SCSS (CSS Modules)              |
+| Package manager | pnpm                            |
+| Node            | 22 (see `.nvmrc`)               |
 | Hosting         | Static export → S3 + CloudFront |
 
 ## Prerequisites
@@ -30,11 +30,11 @@ pnpm dev           # http://localhost:3000
 
 ## Scripts
 
-| Command      | Description                                    |
-| ------------ | ---------------------------------------------- |
-| `pnpm dev`   | Start the dev server                           |
-| `pnpm build` | Static export build → `dist/` (HTML/CSS/JS)    |
-| `pnpm lint`  | Run ESLint                                     |
+| Command      | Description                                 |
+| ------------ | ------------------------------------------- |
+| `pnpm dev`   | Start the dev server                        |
+| `pnpm build` | Static export build → `dist/` (HTML/CSS/JS) |
+| `pnpm lint`  | Run ESLint                                  |
 
 > `next start` is not used: the app is a **static export** (`output: 'export'`),
 > so there is no Node server to serve. To preview the built output locally,
@@ -45,7 +45,7 @@ pnpm dev           # http://localhost:3000
 ```
 app/                  App Router routes
   layout.tsx          Root layout: AntdRegistry → ConfigProvider
-  page.tsx            `/` → client redirect to the tenants page
+  page.tsx            `/` → redirects the browser to the Hive login page
   globals.scss        Global styles
   (portal)/           Route group: sidebar shell around all portal pages
     customers/page.tsx                 `/customers` → client redirect
@@ -57,13 +57,15 @@ features/
   Tenants/            Everything for tenants in one place: api.ts (GET/POST /api/v1/tenants),
                       adapters.ts (Hive backend -> UI shape mapping), types.ts,
                       utils.tsx (table mapping, columns), TenantsTable / TenantForm, styles/
-  Login/              slice.ts: authToken + user details (used by axios baseQuery)
+  Login/              RedirectToLogin.tsx (full-page redirect to the Hive login
+                      page), utils.ts (login URL, shared with the 401 interceptor)
 shared/
   RedirectToTenants.tsx   Client redirect used by the landing/redirect pages
   Notification/       Success/error toasts driven by redux (setNotification)
   hooks/
     useDateRangeFilter.ts   Date-range chip (kept in the URL), shared by layout + Tenants
-axiosconfig/          axiosInstance, baseQuery (auth + refresh), interceptor
+axiosconfig/          axiosInstance, baseQuery (cookie-based auth via withCredentials),
+                      interceptor (redirects to login on 401)
 redux/
   store.ts            Singleton store + RootState / AppDispatch types
   rootReducer.ts      Slice + API reducers
@@ -89,9 +91,15 @@ styles/
 - **Redirects**: `redirects()`/`rewrites()` are unavailable in static export, so
   route redirects are done client-side (`shared/RedirectToTenants.tsx` + a thin
   `page.tsx` per source route).
-- **State**: a slice is only for state the axios layer needs (login, notification).
-  Everything else is `useState`, or the URL when several layouts share it. The
-  redux `Provider` lives in `app/(portal)/layout.tsx` (a client layout).
+- **State**: a slice is only for state the axios layer needs (currently just
+  notification — auth is a cookie the browser sends automatically, so there's
+  no login slice). Everything else is `useState`, or the URL when several
+  layouts share it. The redux `Provider` lives in `app/(portal)/layout.tsx`
+  (a client layout).
+- **Auth**: the backend owns the login UI and session cookie. `RedirectToLogin`
+  sends the browser there on landing, and the axios response interceptor sends
+  it back there on any `401`. There is no access/refresh token in the SPA —
+  every request just goes out with `withCredentials: true`.
 - **SSR styles** for AntD are handled by `@ant-design/nextjs-registry`
   (`AntdRegistry` in the root layout) — this prevents a flash of unstyled content.
 - **SCSS**: component styles are `*.module.scss`; import shared tokens with
@@ -107,11 +115,11 @@ into the bundle — a static export has no runtime server, so nothing is read at
 runtime. Locally, create `.env.local`; CI copies `.env.<env>` to `.env.local`
 before building.
 
-| Variable                    | Scope    | Purpose                                             |
-| --------------------------- | -------- | --------------------------------------------------- |
-| `NEXT_PUBLIC_API_BASE_URL`  | browser  | Origin of the Hive backend the app calls directly   |
-| `NEXT_PUBLIC_API_VERSION`   | browser  | Optional API version prefix                         |
-| `NEXT_PUBLIC_LD_CLIENT_ID`  | browser  | LaunchDarkly client-side ID (per environment)       |
+| Variable                   | Scope   | Purpose                                           |
+| -------------------------- | ------- | ------------------------------------------------- |
+| `NEXT_PUBLIC_API_BASE_URL` | browser | Origin of the Hive backend the app calls directly |
+| `NEXT_PUBLIC_API_VERSION`  | browser | Optional API version prefix                       |
+| `NEXT_PUBLIC_LD_CLIENT_ID` | browser | LaunchDarkly client-side ID (per environment)     |
 
 ## Deployment
 

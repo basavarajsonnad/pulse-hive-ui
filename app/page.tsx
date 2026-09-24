@@ -1,5 +1,5 @@
-import RedirectToTenants from "@/shared/RedirectToTenants";
+import RedirectToLogin from "@/features/Login/RedirectToLogin";
 
 export default function HomePage() {
-  return <RedirectToTenants />;
+  return <RedirectToLogin />;
 }
