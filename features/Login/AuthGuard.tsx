@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import { Spin } from "antd";
 import { refreshAccessToken } from "@/axiosconfig/baseQuery";
 import { redirectToLogin } from "@/features/Login/utils";
+import { useAppDispatch } from "@/redux/hooks";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
+  const dispatch = useAppDispatch();
   const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    refreshAccessToken()
+    refreshAccessToken(dispatch)
       .then(() => {
         if (!cancelled) setIsAuthorized(true);
       })
@@ -22,7 +24,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [dispatch]);
 
   if (!isAuthorized) {
     return (
