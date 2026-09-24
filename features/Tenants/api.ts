@@ -7,6 +7,11 @@ import type {
   ITenantsQuery,
   ITenantsResponse,
 } from "@/features/Tenants/types";
+import {
+  toHiveCreateTenant,
+  toUiTenantDetails,
+  toUiTenantsResponse,
+} from "@/features/Tenants/adapters";
 import { GET, POST } from "@/utils/constants/apiConstants";
 import { TENANTS } from "@/utils/constants/urlConstants";
 
@@ -22,23 +27,25 @@ const tenantsApi = createApi({
         data: { page, size },
         requiresAuth: false,
       }),
+      transformResponse: toUiTenantsResponse,
       providesTags: ["tenantsApi"],
     }),
     addTenant: builder.mutation<unknown, ICreateTenantRequest>({
       query: (data) => ({
         url: TENANTS,
         method: POST,
-        data,
+        data: toHiveCreateTenant(data),
         requiresAuth: false,
       }),
       invalidatesTags: ["tenantsApi"],
     }),
     getTenantDetails: builder.query<ITenantDetails, string>({
       query: (customerId) => ({
-        url: `${TENANTS}/${customerId}`,
+        url: `${TENANTS}/${encodeURIComponent(customerId)}`,
         method: GET,
         requiresAuth: false,
       }),
+      transformResponse: toUiTenantDetails,
       providesTags: ["tenantsApi"],
     }),
   }),
