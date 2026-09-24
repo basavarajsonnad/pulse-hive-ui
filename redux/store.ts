@@ -3,6 +3,7 @@ import { setupListeners } from "@reduxjs/toolkit/query";
 
 import rootReducer from "@/redux/rootReducer";
 import tenantsApi from "@/features/Tenants/api";
+import { setStore } from "@/redux/storeAccessor";
 
 const store = configureStore({
   reducer: rootReducer,
@@ -11,6 +12,7 @@ const store = configureStore({
   devTools: true,
 });
 
+setStore(store);
 setupListeners(store.dispatch);
 
 export type RootState = ReturnType<typeof store.getState>;

@@ -4,7 +4,7 @@ import { jwtDecode } from "jwt-decode";
 
 import axiosInstance from "@/axiosconfig/axiosInstance";
 import "@/axiosconfig/interceptor";
-import store from "@/redux/store";
+import { getStore } from "@/redux/storeAccessor";
 import { setNotification } from "@/shared/Notification/slice";
 import {
   resetLoginReducer,
@@ -17,7 +17,7 @@ import { SUCCESS } from "@/utils/constants/appConstants";
 import { LOGIN_API } from "@/utils/constants/urlConstants";
 import type { IApiError, IAxiosBaseQueryArgs } from "./types";
 
-const refreshAccessToken = async () => {
+export const refreshAccessToken = async () => {
   try {
     const response = await axiosInstance.post(LOGIN_API.REFRESH_TOKEN, null, {
       withCredentials: true,
@@ -25,13 +25,13 @@ const refreshAccessToken = async () => {
 
     if (response.data?.success) {
       const userDetails: ILoginUserDetails = response.data.data;
-      store.dispatch(setLoggedInUserDetails(userDetails));
+      getStore().dispatch(setLoggedInUserDetails(userDetails));
       return userDetails.access_token;
     }
 
     throw new Error("Failed to refresh token");
   } catch (error) {
-    store.dispatch(resetLoginReducer());
+    getStore().dispatch(resetLoginReducer());
     throw error;
   }
 };
@@ -60,7 +60,7 @@ const axiosBaseQuery =
     const headers: Record<string, string> = {};
 
     if (requiresAuth) {
-      let authToken = store.getState().login.authToken;
+      let authToken = getStore().getState().login.authToken;
 
       if (!authToken) {
         throw new Error("User is not authenticated");
@@ -86,7 +86,7 @@ const axiosBaseQuery =
       const result = await axiosInstance(requestConfig);
 
       if (showSuccessNotification) {
-        store.dispatch(
+        getStore().dispatch(
           setNotification({ type: SUCCESS, message: result.data?.message }),
         );
       }

@@ -1,5 +1,5 @@
 import { isAxiosError } from "axios";
-import store from "@/redux/store";
+import { getStore } from "@/redux/storeAccessor";
 import axiosInstance from "@/axiosconfig/axiosInstance";
 import { resetLoginReducer } from "@/features/Login/slice";
 import { redirectToLogin } from "@/features/Login/utils";
@@ -17,10 +17,10 @@ axiosInstance.interceptors.response.use(
       const message = error.response?.data?.message;
 
       if (status === API_STATUS.UNAUTHORIZED) {
-        store.dispatch(resetLoginReducer());
+        getStore().dispatch(resetLoginReducer());
         redirectToLogin();
       } else if (status && status >= 400 && status < 500 && message) {
-        store.dispatch(setNotification({ type: ERROR, message }));
+        getStore().dispatch(setNotification({ type: ERROR, message }));
       }
     }
 
