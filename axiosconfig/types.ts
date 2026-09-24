@@ -5,7 +5,6 @@ export interface IAxiosBaseQueryArgs {
   method: Method;
   data?: unknown;
   showSuccessNotification?: boolean;
-  requiresAuth?: boolean;
   responseType?: ResponseType;
 }
 
