@@ -2,12 +2,11 @@
 
 import { useEffect } from "react";
 import { Spin } from "antd";
-import { API_URL, API_VERSION } from "@/utils/constants/apiConstants";
-import { LOGIN_API } from "@/utils/constants/urlConstants";
+import { redirectToLogin } from "@/features/Login/utils";
 
 export default function RedirectToLogin() {
   useEffect(() => {
-    window.location.href = `${API_URL}${API_VERSION}${LOGIN_API.LOGIN}`;
+    redirectToLogin();
   }, []);
 
   return (
