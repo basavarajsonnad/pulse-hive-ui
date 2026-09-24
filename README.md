@@ -4,15 +4,15 @@ Next.js (App Router) + Ant Design + Redux Toolkit + SCSS.
 
 ## Stack
 
-| Concern         | Choice                      |
-| --------------- | --------------------------- |
-| Framework       | Next.js 16 (App Router)     |
-| Language        | TypeScript                  |
-| UI library      | Ant Design 6                |
-| State           | Redux Toolkit + React-Redux |
-| Styling         | SCSS (CSS Modules)          |
-| Package manager | pnpm                        |
-| Node            | 22 (see `.nvmrc`)           |
+| Concern         | Choice                          |
+| --------------- | ------------------------------- |
+| Framework       | Next.js 16 (App Router)         |
+| Language        | TypeScript                      |
+| UI library      | Ant Design 6                    |
+| State           | Redux Toolkit + React-Redux     |
+| Styling         | SCSS (CSS Modules)              |
+| Package manager | pnpm                            |
+| Node            | 22 (see `.nvmrc`)               |
 | Hosting         | Static export → S3 + CloudFront |
 
 ## Prerequisites
@@ -30,11 +30,11 @@ pnpm dev           # http://localhost:3000
 
 ## Scripts
 
-| Command      | Description                                    |
-| ------------ | ---------------------------------------------- |
-| `pnpm dev`   | Start the dev server                           |
-| `pnpm build` | Static export build → `dist/` (HTML/CSS/JS)    |
-| `pnpm lint`  | Run ESLint                                     |
+| Command      | Description                                 |
+| ------------ | ------------------------------------------- |
+| `pnpm dev`   | Start the dev server                        |
+| `pnpm build` | Static export build → `dist/` (HTML/CSS/JS) |
+| `pnpm lint`  | Run ESLint                                  |
 
 > `next start` is not used: the app is a **static export** (`output: 'export'`),
 > so there is no Node server to serve. To preview the built output locally,
@@ -107,11 +107,11 @@ into the bundle — a static export has no runtime server, so nothing is read at
 runtime. Locally, create `.env.local`; CI copies `.env.<env>` to `.env.local`
 before building.
 
-| Variable                    | Scope    | Purpose                                             |
-| --------------------------- | -------- | --------------------------------------------------- |
-| `NEXT_PUBLIC_API_BASE_URL`  | browser  | Origin of the Hive backend the app calls directly   |
-| `NEXT_PUBLIC_API_VERSION`   | browser  | Optional API version prefix                         |
-| `NEXT_PUBLIC_LD_CLIENT_ID`  | browser  | LaunchDarkly client-side ID (per environment)       |
+| Variable                   | Scope   | Purpose                                           |
+| -------------------------- | ------- | ------------------------------------------------- |
+| `NEXT_PUBLIC_API_BASE_URL` | browser | Origin of the Hive backend the app calls directly |
+| `NEXT_PUBLIC_API_VERSION`  | browser | Optional API version prefix                       |
+| `NEXT_PUBLIC_LD_CLIENT_ID` | browser | LaunchDarkly client-side ID (per environment)     |
 
 ## Deployment
 
